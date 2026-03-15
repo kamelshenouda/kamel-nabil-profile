@@ -268,7 +268,8 @@ body.dark .modal-box{box-shadow:0 24px 80px rgba(0,0,0,0.6)}
 .modal-close:hover{background:var(--rule);color:var(--text)}
 .modal-body{
   overflow-y:auto;padding:20px 24px 24px;
-  display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,auto);
+  grid-auto-flow:column;gap:16px 24px;
 }
 .modal-domain{border-left:2px solid var(--accent);padding-left:12px}
 .modal-domain-name{
@@ -692,7 +693,6 @@ body.dark .card {
         <span class="dtag">E-commerce</span>
         <span class="dtag">EdTech</span>
         <span class="dtag">Bots</span>
-        <span class="dtag">AI</span>
       </div>
     </div>
     
@@ -952,10 +952,10 @@ body.dark .card {
         </ol>
       </div>
       <div class="modal-domain">
-        <div class="modal-domain-name">EdTech</div>
+        <div class="modal-domain-name">AI-Powered Features</div>
         <ol>
-          <li>TeacherKit</li>
-          <li>MathSprint</li>
+          <li>Stocks Fundamental Analysis</li>
+          <li>Is this deal right for me?</li>
         </ol>
       </div>
       <div class="modal-domain">
@@ -974,16 +974,16 @@ body.dark .card {
         </ol>
       </div>
       <div class="modal-domain">
-        <div class="modal-domain-name">Bots</div>
+        <div class="modal-domain-name">ChatBots</div>
         <ol>
           <li>Sllr Chat Auto Order Creation</li>
         </ol>
       </div>
       <div class="modal-domain">
-        <div class="modal-domain-name">AI-Powered Features</div>
+        <div class="modal-domain-name">EdTech</div>
         <ol>
-          <li>Stocks Fundamental Analysis</li>
-          <li>Is this deal right for me?</li>
+          <li>TeacherKit</li>
+          <li>MathSprint</li>
         </ol>
       </div>
     </div>
