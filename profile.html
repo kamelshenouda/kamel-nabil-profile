@@ -636,8 +636,6 @@ body.dark .card {
 }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="page-progress"></div>
@@ -1137,99 +1135,54 @@ body.dark .card {
 
 })();
 
-async function downloadPDF() {
-  var btn = document.getElementById('pdfBtn');
-  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8L3 5h2V1h2v4h2L6 8zM1 10h10v1H1z"/></svg> Generating…';
-  btn.disabled = true;
-
+function downloadPDF() {
   var wasDark = document.body.classList.contains('dark');
   document.body.classList.remove('dark');
-  await new Promise(function(r){ setTimeout(r, 320); });
 
-  var wrap = null;
-  try {
-    var A4_W = 794, A4_H = 1123;
+  // Expand all sections
+  document.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
+  document.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
 
-    // Off-screen wrapper at A4 width
-    wrap = document.createElement('div');
-    wrap.style.cssText = 'position:absolute;left:-9999px;top:0;width:' + A4_W + 'px;pointer-events:none;';
-    document.body.appendChild(wrap);
+  // Measure card at current state to compute scale for exactly one A4 page
+  var card = document.querySelector('.card');
+  var cardH = card.scrollHeight;
+  var cardW = card.offsetWidth;
+  var A4_W_PX = 794, A4_H_PX = 1123; // A4 at 96 dpi
+  var scale = Math.min(A4_W_PX / cardW, A4_H_PX / cardH);
 
-    // Clone and configure card for PDF
-    var clone = document.querySelector('.card').cloneNode(true);
-    clone.style.opacity = '1';
-    clone.style.transform = 'none';
-    clone.style.animation = 'none';
-    clone.style.minHeight = 'auto';
-    clone.style.boxShadow = 'none';
-    clone.style.width = A4_W + 'px';
-    clone.style.maxWidth = 'none';
+  // Inject print styles
+  var s = document.createElement('style');
+  s.id = 'pdf-print-style';
+  s.textContent = [
+    '@media print{',
+    '@page{size:A4 portrait;margin:0}',
+    '*,*::before,*::after{',
+      'animation:none!important;transition:none!important;',
+      '-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}',
+    'html{zoom:' + scale + '}',
+    'body{padding:0!important;margin:0!important;display:block!important;background:var(--page-bg)!important}',
+    '#pdfBtn,#page-progress,.modal-overlay{display:none!important}',
+    '.card{',
+      'opacity:1!important;transform:none!important;animation:none!important;',
+      'box-shadow:none!important;',
+      'width:' + Math.round(A4_W_PX / scale) + 'px!important;max-width:none!important}',
+    '.exp-body{max-height:none!important;overflow:visible!important;opacity:1!important}',
+    '.skill-list{max-height:none!important;overflow:visible!important;opacity:1!important;margin-top:6px!important}',
+    '.reveal,.stats-list .stat-row{opacity:1!important;transform:none!important}',
+    '.exp-chevron,.skill-chevron,.toggle-btn,.tip-btn,.exp-pills{display:none!important}',
+    '}'
+  ].join('');
+  document.head.appendChild(s);
 
-    // Tighten padding/margins to maximise font size in final PDF
-    var cl = clone.querySelector('.col-left');
-    var cr = clone.querySelector('.col-right');
-    var rn = clone.querySelector('.right-name');
-    if (cl) cl.style.padding = '22px 18px';
-    if (cr) cr.style.padding = '22px 24px';
-    if (rn) { rn.style.marginBottom = '14px'; rn.style.paddingBottom = '12px'; }
-    clone.querySelectorAll('.r-section').forEach(function(el){ el.style.marginBottom = '14px'; });
-    clone.querySelectorAll('.exp-entry').forEach(function(el){ el.style.marginBottom = '10px'; el.style.paddingBottom = '10px'; });
+  // Clean up after print dialog closes
+  window.addEventListener('afterprint', function restore() {
+    window.removeEventListener('afterprint', restore);
+    var el = document.getElementById('pdf-print-style');
+    if (el) el.remove();
+    if (wasDark) document.body.classList.add('dark');
+  });
 
-    // Expand all accordions
-    clone.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
-    clone.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
-    clone.querySelectorAll('.exp-body').forEach(function(el){
-      el.style.maxHeight = 'none'; el.style.overflow = 'visible';
-      el.style.opacity = '1'; el.style.transition = 'none';
-    });
-    clone.querySelectorAll('.skill-list').forEach(function(el){
-      el.style.maxHeight = 'none'; el.style.overflow = 'visible';
-      el.style.opacity = '1'; el.style.marginTop = '6px';
-    });
-    clone.querySelectorAll('.reveal, .stats-list .stat-row').forEach(function(el){
-      el.style.opacity = '1'; el.style.transform = 'none';
-    });
-
-    // Hide UI-only + metric pills
-    clone.querySelectorAll('.toggle-btn,.exp-chevron,.skill-chevron,.tip-btn,.exp-pills').forEach(function(el){
-      el.style.display = 'none';
-    });
-
-    wrap.appendChild(clone);
-    await new Promise(function(r){ setTimeout(r, 500); });
-
-    // Capture at natural size
-    var src = await html2canvas(wrap, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: '#faf9f6'
-    });
-
-    document.body.removeChild(wrap);
-    wrap = null;
-
-    // Scale to fill A4 exactly using canvas drawImage
-    var out = document.createElement('canvas');
-    out.width  = A4_W * 2;
-    out.height = A4_H * 2;
-    var ctx = out.getContext('2d');
-    ctx.fillStyle = '#faf9f6';
-    ctx.fillRect(0, 0, out.width, out.height);
-    ctx.drawImage(src, 0, 0, out.width, out.height);
-
-    var pdf = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    pdf.addImage(out.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
-    pdf.save('kamel-nabil-resume.pdf');
-  } catch(e) {
-    console.error('PDF error:', e);
-    if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
-  }
-
-  if (wasDark) document.body.classList.add('dark');
-  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8.5L2.5 5H5V1h2v4h2.5L6 8.5zM1 10h10v1H1v-1z"/></svg> Download Resume';
-  btn.disabled = false;
+  window.print();
 }
 </script>
 
