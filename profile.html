@@ -1139,50 +1139,62 @@ function downloadPDF() {
   var wasDark = document.body.classList.contains('dark');
   document.body.classList.remove('dark');
 
-  // Expand all sections
-  document.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
-  document.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
+  // Force-expand everything synchronously (bypass CSS transitions)
+  // so scrollHeight gives the true fully-expanded height
+  var measureStyle = document.createElement('style');
+  measureStyle.textContent =
+    '.exp-body,.skill-list{transition:none!important;max-height:none!important;' +
+    'overflow:visible!important;opacity:1!important;margin-top:6px}' +
+    '.reveal,.stats-list .stat-row{transition:none!important;opacity:1!important;transform:none!important}';
+  document.head.appendChild(measureStyle);
+  document.querySelectorAll('.exp-entry,.skill-group').forEach(function(el){ el.classList.add('open'); });
 
-  // Measure card at current state to compute scale for exactly one A4 page
-  var card = document.querySelector('.card');
-  var cardH = card.scrollHeight;
-  var cardW = card.offsetWidth;
-  var A4_W_PX = 794, A4_H_PX = 1123; // A4 at 96 dpi
-  var scale = Math.min(A4_W_PX / cardW, A4_H_PX / cardH);
+  // Double rAF ensures browser has flushed all layout before we measure
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      var card  = document.querySelector('.card');
+      var cardH = card.scrollHeight;
+      var cardW = card.offsetWidth;
+      measureStyle.remove();
 
-  // Inject print styles
-  var s = document.createElement('style');
-  s.id = 'pdf-print-style';
-  s.textContent = [
-    '@media print{',
-    '@page{size:A4 portrait;margin:0}',
-    '*,*::before,*::after{',
-      'animation:none!important;transition:none!important;',
-      '-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}',
-    'html{zoom:' + scale + '}',
-    'body{padding:0!important;margin:0!important;display:block!important;background:var(--page-bg)!important}',
-    '#pdfBtn,#page-progress,.modal-overlay{display:none!important}',
-    '.card{',
-      'opacity:1!important;transform:none!important;animation:none!important;',
-      'box-shadow:none!important;',
-      'width:' + Math.round(A4_W_PX / scale) + 'px!important;max-width:none!important}',
-    '.exp-body{max-height:none!important;overflow:visible!important;opacity:1!important}',
-    '.skill-list{max-height:none!important;overflow:visible!important;opacity:1!important;margin-top:6px!important}',
-    '.reveal,.stats-list .stat-row{opacity:1!important;transform:none!important}',
-    '.exp-chevron,.skill-chevron,.toggle-btn,.tip-btn,.exp-pills{display:none!important}',
-    '}'
-  ].join('');
-  document.head.appendChild(s);
+      // A4 at 96 dpi: 794 × 1123 px
+      // Scale to fill height (maximises font size); body width is adjusted to match
+      var A4_W = 794, A4_H = 1123;
+      var scale = A4_H / cardH;          // height-filling zoom
+      var bodyW  = Math.round(A4_W / scale); // CSS width that renders as A4_W after zoom
 
-  // Clean up after print dialog closes
-  window.addEventListener('afterprint', function restore() {
-    window.removeEventListener('afterprint', restore);
-    var el = document.getElementById('pdf-print-style');
-    if (el) el.remove();
-    if (wasDark) document.body.classList.add('dark');
+      var s = document.createElement('style');
+      s.id = 'pdf-print-style';
+      s.textContent = [
+        '@media print{',
+        '@page{size:A4 portrait;margin:0}',
+        '*,*::before,*::after{animation:none!important;transition:none!important;',
+          '-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}',
+        'html{zoom:' + scale + ';overflow:hidden}',
+        'body{padding:0!important;margin:0!important;display:block!important;',
+          'width:' + bodyW + 'px!important;background:var(--page-bg)!important}',
+        '#pdfBtn,#page-progress,.modal-overlay{display:none!important}',
+        '.card{opacity:1!important;transform:none!important;animation:none!important;',
+          'box-shadow:none!important;width:100%!important;max-width:none!important}',
+        '.exp-body{max-height:none!important;overflow:visible!important;opacity:1!important}',
+        '.skill-list{max-height:none!important;overflow:visible!important;',
+          'opacity:1!important;margin-top:6px!important}',
+        '.reveal,.stats-list .stat-row{opacity:1!important;transform:none!important}',
+        '.exp-chevron,.skill-chevron,.toggle-btn,.tip-btn,.exp-pills{display:none!important}',
+        '}'
+      ].join('');
+      document.head.appendChild(s);
+
+      window.addEventListener('afterprint', function restore() {
+        window.removeEventListener('afterprint', restore);
+        var el = document.getElementById('pdf-print-style');
+        if (el) el.remove();
+        if (wasDark) document.body.classList.add('dark');
+      });
+
+      window.print();
+    });
   });
-
-  window.print();
 }
 </script>
 
