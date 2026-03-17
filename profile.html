@@ -1292,40 +1292,29 @@ async function downloadPDF() {
   btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8L3 5h2V1h2v4h2L6 8zM1 10h10v1H1z"/></svg> Generating…';
   btn.disabled = true;
 
-  var wasDark = document.body.classList.contains('dark');
-  document.body.classList.remove('dark');
-  document.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
-  document.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
-  await new Promise(function(r){ setTimeout(r, 700); });
-
   try {
-    var card = document.querySelector('.card');
-    var canvas = await html2canvas(card, {
-      scale: 1.5,
+    var pv = document.getElementById('pdf-view');
+    // Temporarily bring into view for html2canvas
+    pv.style.left = '0';
+    pv.style.top = '0';
+    pv.style.zIndex = '-1';
+    pv.style.visibility = 'visible';
+    await new Promise(function(r){ setTimeout(r, 300); });
+
+    var canvas = await html2canvas(pv, {
+      scale: 2,
       useCORS: true,
       allowTaint: true,
       logging: false,
-      backgroundColor: '#faf9f6',
-      onclone: function(clonedDoc) {
-        clonedDoc.querySelectorAll('.exp-body').forEach(function(el){
-          el.style.maxHeight = 'none';
-          el.style.overflow = 'visible';
-          el.style.opacity = '1';
-          el.style.transform = 'none';
-        });
-        clonedDoc.querySelectorAll('.skill-list').forEach(function(el){
-          el.style.maxHeight = 'none';
-          el.style.overflow = 'visible';
-          el.style.opacity = '1';
-        });
-        var b = clonedDoc.getElementById('pdfBtn');
-        if (b) b.style.display = 'none';
-        var pv = clonedDoc.getElementById('pdf-view');
-        if (pv) pv.style.display = 'none';
-        var pm = clonedDoc.getElementById('productsModal');
-        if (pm) pm.style.display = 'none';
-      }
+      backgroundColor: '#ffffff',
+      width: 794,
+      windowWidth: 794
     });
+
+    // Restore hidden state
+    pv.style.left = '-9999px';
+    pv.style.zIndex = '-1';
+    pv.style.visibility = '';
 
     var { jsPDF } = window.jspdf;
     var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
