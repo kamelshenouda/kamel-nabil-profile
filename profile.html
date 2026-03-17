@@ -1146,65 +1146,79 @@ async function downloadPDF() {
   document.body.classList.remove('dark');
   await new Promise(function(r){ setTimeout(r, 320); });
 
+  var wrap = null;
   try {
-    var card = document.querySelector('.card');
-    var canvas = await html2canvas(card, {
+    // A4 at 96 dpi
+    var A4_W = 794, A4_H = 1123;
+
+    // Build a hidden off-screen wrapper at exact A4 width
+    wrap = document.createElement('div');
+    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + A4_W + 'px;pointer-events:none;z-index:-1;';
+    document.body.appendChild(wrap);
+
+    // Deep-clone the card and fix it up
+    var clone = document.querySelector('.card').cloneNode(true);
+    clone.style.opacity = '1';
+    clone.style.transform = 'none';
+    clone.style.animation = 'none';
+    clone.style.minHeight = 'auto';
+    clone.style.boxShadow = 'none';
+    clone.style.width = A4_W + 'px';
+    clone.style.maxWidth = 'none';
+
+    // Expand all accordions
+    clone.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
+    clone.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
+    clone.querySelectorAll('.exp-body').forEach(function(el){
+      el.style.maxHeight = 'none'; el.style.overflow = 'visible';
+      el.style.opacity = '1'; el.style.transition = 'none';
+    });
+    clone.querySelectorAll('.skill-list').forEach(function(el){
+      el.style.maxHeight = 'none'; el.style.overflow = 'visible';
+      el.style.opacity = '1'; el.style.marginTop = '6px';
+    });
+    clone.querySelectorAll('.reveal, .stats-list .stat-row').forEach(function(el){
+      el.style.opacity = '1'; el.style.transform = 'none';
+    });
+
+    // Hide UI-only elements and metric pills
+    clone.querySelectorAll('.toggle-btn,.exp-chevron,.skill-chevron,.tip-btn,.exp-pills').forEach(function(el){
+      el.style.display = 'none';
+    });
+
+    wrap.appendChild(clone);
+    // Let the browser fully render the clone
+    await new Promise(function(r){ setTimeout(r, 400); });
+
+    // Measure natural height, then zoom to fill A4 exactly
+    var naturalH = clone.scrollHeight;
+    var zoom = A4_H / naturalH;
+    clone.style.zoom = zoom;
+    wrap.style.height = A4_H + 'px';
+    wrap.style.overflow = 'hidden';
+
+    await new Promise(function(r){ setTimeout(r, 150); });
+
+    var canvas = await html2canvas(wrap, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       logging: false,
       backgroundColor: '#faf9f6',
-      onclone: function(clonedDoc) {
-        var c = clonedDoc.querySelector('.card');
-        // Fix: card starts at opacity:0 from CSS animation — override it
-        c.style.cssText += ';opacity:1!important;transform:none!important;animation:none!important;min-height:auto!important;box-shadow:none!important;';
-        // Expand all accordions
-        clonedDoc.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
-        clonedDoc.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
-        // Unlock collapsed panels
-        clonedDoc.querySelectorAll('.exp-body').forEach(function(el){
-          el.style.cssText += ';max-height:none!important;overflow:visible!important;opacity:1!important;transition:none!important;';
-        });
-        clonedDoc.querySelectorAll('.skill-list').forEach(function(el){
-          el.style.cssText += ';max-height:none!important;overflow:visible!important;opacity:1!important;margin-top:6px!important;';
-        });
-        // Reveal animation-hidden elements
-        clonedDoc.querySelectorAll('.reveal,.stats-list .stat-row').forEach(function(el){
-          el.style.cssText += ';opacity:1!important;transform:none!important;';
-        });
-        // Hide UI-only controls and pill tags
-        ['pdfBtn','page-progress'].forEach(function(id){
-          var el = clonedDoc.getElementById(id);
-          if (el) el.style.display = 'none';
-        });
-        clonedDoc.querySelectorAll('.toggle-btn,.exp-chevron,.skill-chevron,.tip-btn,.modal-overlay,.exp-pills').forEach(function(el){
-          el.style.display = 'none';
-        });
-        // Remove body padding so card fills full capture width
-        clonedDoc.body.style.cssText += ';padding:0!important;margin:0!important;display:block!important;';
-        c.style.cssText += ';max-width:none!important;width:100%!important;';
-      }
+      width: A4_W,
+      height: A4_H
     });
 
-    // Scale to fit A4 (210×297mm) in one page
+    document.body.removeChild(wrap);
+    wrap = null;
+
     var { jsPDF } = window.jspdf;
     var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var pdfW = pdf.internal.pageSize.getWidth();
-    var pdfH = pdf.internal.pageSize.getHeight();
-    var aspect = canvas.height / canvas.width;
-    var imgH = pdfW * aspect;
-    var finalW = pdfW, finalH = imgH, offX = 0, offY = 0;
-    if (imgH > pdfH) {
-      finalH = pdfH;
-      finalW = pdfH / aspect;
-      offX = (pdfW - finalW) / 2;
-    } else {
-      offY = (pdfH - imgH) / 2;
-    }
-    pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', offX, offY, finalW, finalH);
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
     pdf.save('kamel-nabil-resume.pdf');
   } catch(e) {
     console.error('PDF error:', e);
+    if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
   }
 
   if (wasDark) document.body.classList.add('dark');
