@@ -239,38 +239,45 @@ body.dark .avail-pill{color:#1a1a1a}
 #pdfBtn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.22)}
 #pdfBtn:active{transform:scale(0.97)}
 body.dark #pdfBtn{color:#1a1a1a}
-#pdf-view{position:fixed;left:-9999px;top:0;width:794px;background:#fff;color:#1a1a1a;font-family:"DM Sans",sans-serif;font-size:10px;line-height:1.5;z-index:-1;pointer-events:none}
-#pdf-view *{box-sizing:border-box}
-.pv-header{background:#1a1a1a;color:#fff;padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between}
-.pv-name{font-family:"Outfit",sans-serif;font-size:22px;font-weight:700;letter-spacing:0.04em;line-height:1.1}
-.pv-title{font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#aaa;margin-top:4px}
-.pv-contact{text-align:right;font-size:9px;color:#ccc;line-height:1.8}
-.pv-body{display:grid;grid-template-columns:190px 1fr;gap:0}
-.pv-left{background:#f2f2f2;padding:14px 14px 14px 16px;border-right:1px solid #ddd}
-.pv-right{padding:14px 18px 14px 16px;background:#fff}
-.pv-section-title{font-family:"Outfit",sans-serif;font-size:7px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#999;margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid #ddd}
-.pv-stat{display:flex;align-items:baseline;gap:5px;margin-bottom:4px}
-.pv-stat-num{font-family:"Outfit",sans-serif;font-size:18px;font-weight:700;color:#1a1a1a;line-height:1}
-.pv-stat-lbl{font-size:8.5px;color:#555}
-.pv-domains{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px}
-.pv-dtag{font-size:7.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:2px 5px;border:1px solid #999;border-radius:3px;color:#333}
-.pv-skill-group{margin-bottom:7px}
-.pv-skill-cat{font-size:7px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#777;margin-bottom:2px}
-.pv-skill-item{font-size:8.5px;color:#333;padding-left:8px;position:relative;line-height:1.5}
-.pv-skill-item::before{content:"•";position:absolute;left:0;color:#555;font-size:10px;line-height:1.3}
-.pv-edu-item{margin-bottom:6px}
-.pv-edu-title{font-size:8.5px;font-weight:600;color:#1a1a1a;line-height:1.3}
-.pv-edu-sub{font-size:7.5px;color:#777}
-.pv-exp-entry{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eee}
-.pv-exp-entry:last-child{border-bottom:none;margin-bottom:0}
-.pv-exp-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1px}
-.pv-exp-role{font-family:"Outfit",sans-serif;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#1a1a1a}
-.pv-exp-period{font-size:7.5px;color:#888}
-.pv-exp-company{font-size:8.5px;font-weight:600;color:#444;font-style:italic;margin-bottom:3px}
-.pv-exp-bullets{padding-left:0;list-style:none;margin:0}
-.pv-exp-bullets li{font-size:8px;color:#333;padding-left:9px;position:relative;line-height:1.5;margin-bottom:1px}
-.pv-exp-bullets li::before{content:"•";position:absolute;left:0;color:#666;font-size:9px;line-height:1.4}
-.pv-exp-bullets li strong{font-weight:600;color:#1a1a1a}
+@media print {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  body {
+    background: var(--page-bg) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+  #pdfBtn, #page-progress, .modal-overlay { display: none !important; }
+  .card {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    min-height: auto !important;
+  }
+  /* Expand all accordions */
+  .exp-body {
+    max-height: none !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+  }
+  .skill-list {
+    max-height: none !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+    margin-top: 6px !important;
+  }
+  /* Hide interactive-only elements */
+  .exp-chevron, .skill-chevron, .toggle-btn, .tip-btn { display: none !important; }
+  /* Reveal all animated-in elements */
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .stats-list .stat-row { opacity: 1 !important; transform: none !important; }
+  /* Avoid breaking entries across pages */
+  .exp-entry { break-inside: avoid; }
+}
 /* Modal overlay */
 .modal-overlay{
   display:none;position:fixed;inset:0;z-index:1000;
@@ -668,8 +675,6 @@ body.dark .card {
 }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="page-progress"></div>
@@ -677,124 +682,6 @@ body.dark .card {
   <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8.5L2.5 5H5V1h2v4h2.5L6 8.5zM1 10h10v1H1v-1z"/></svg>
   Download Resume
 </button>
-<div id="pdf-view">
-  <div class="pv-header">
-    <div>
-      <div class="pv-name">KAMEL NABIL</div>
-      <div class="pv-title">Head of Product · Product Builder · AI-Native PM</div>
-    </div>
-    <div class="pv-contact">
-      kamelnabil@gmail.com<br>
-      linkedin.com/in/kamel-nabil<br>
-      Riyadh, Saudi Arabia
-    </div>
-  </div>
-  <div class="pv-body">
-    <div class="pv-left">
-      <div class="pv-section-title" style="margin-top:0">At a Glance</div>
-      <div class="pv-stat"><span class="pv-stat-num">12</span><span class="pv-stat-lbl">Years in product management</span></div>
-      <div class="pv-stat" style="margin-bottom:12px"><span class="pv-stat-num">22</span><span class="pv-stat-lbl">Products launched</span></div>
-      <div class="pv-section-title">Domains</div>
-      <div class="pv-domains" style="margin-bottom:12px">
-        <span class="pv-dtag">WealthTech</span><span class="pv-dtag">FinTech</span><span class="pv-dtag">LogiTech</span><span class="pv-dtag">SaaS</span><span class="pv-dtag">EdTech</span><span class="pv-dtag">E-Commerce</span><span class="pv-dtag">Bots</span><span class="pv-dtag">AI</span>
-      </div>
-      <div class="pv-section-title">Skills</div>
-      <div class="pv-skill-group">
-        <div class="pv-skill-cat">Product Management</div>
-        <div class="pv-skill-item">Product strategy &amp; roadmapping</div>
-        <div class="pv-skill-item">Stakeholder management</div>
-        <div class="pv-skill-item">Discovery &amp; delivery</div>
-        <div class="pv-skill-item">0→1 building &amp; scaling</div>
-        <div class="pv-skill-item">Product-led growth</div>
-      </div>
-      <div class="pv-skill-group">
-        <div class="pv-skill-cat">Customer Centricity</div>
-        <div class="pv-skill-item">Human-centered design</div>
-        <div class="pv-skill-item">User interviews &amp; testing</div>
-        <div class="pv-skill-item">Feedback systems</div>
-      </div>
-      <div class="pv-skill-group" style="margin-bottom:12px">
-        <div class="pv-skill-cat">AI &amp; Learning</div>
-        <div class="pv-skill-item">AI-native PM (daily practice)</div>
-        <div class="pv-skill-item">AI-powered products</div>
-        <div class="pv-skill-item">Marty Cagan · Shreyas Doshi</div>
-      </div>
-      <div class="pv-section-title">Education</div>
-      <div class="pv-edu-item">
-        <div class="pv-edu-title">Computer &amp; Information Sciences</div>
-        <div class="pv-edu-sub">Ain Shams University · Cairo, Egypt · 2003–2007</div>
-      </div>
-      <div class="pv-edu-item">
-        <div class="pv-edu-title">Usability Testing</div>
-        <div class="pv-edu-sub">Akendi Workshop · London, UK</div>
-      </div>
-      <div class="pv-edu-item">
-        <div class="pv-edu-title">ISTQB Certificate</div>
-        <div class="pv-edu-sub">American Software Testing Board</div>
-      </div>
-      <div class="pv-edu-item">
-        <div class="pv-edu-title">Inspired &amp; Empowered</div>
-        <div class="pv-edu-sub">Marty Cagan · continuous reading</div>
-      </div>
-    </div>
-    <div class="pv-right">
-      <div class="pv-section-title" style="margin-top:0">Professional Experience</div>
-      <div class="pv-exp-entry">
-        <div class="pv-exp-header"><span class="pv-exp-role">Head of Product</span><span class="pv-exp-period">Jan 2025 – Present</span></div>
-        <div class="pv-exp-company">Awaed · Riyadh, Saudi Arabia</div>
-        <ul class="pv-exp-bullets">
-          <li>Led <strong>product strategy</strong> positioning against local &amp; global players across GCC wealth-tech</li>
-          <li>Set the <strong>product roadmap</strong> for all product lines toward the North Star metric</li>
-          <li>Defined <strong>Awaed+ strategy</strong> — premium SaaS model driving revenue &amp; retention</li>
-          <li>Launched <strong>IPO Access</strong> for Saudi &amp; US Markets — 5.4M SAR in subscriptions</li>
-          <li>Led <strong>Pre &amp; Post Market Trading</strong> — $2.6B trading volume, 57% active users ↑</li>
-        </ul>
-      </div>
-      <div class="pv-exp-entry">
-        <div class="pv-exp-header"><span class="pv-exp-role">Principal Product Manager</span><span class="pv-exp-period">May 2022 – Dec 2024</span></div>
-        <div class="pv-exp-company">Sllr by Bosta · 2+ years</div>
-        <ul class="pv-exp-bullets">
-          <li>Scaled GMV from <strong>£1.28M → £32.3M (25×)</strong> and active stores from 73 → 1,004</li>
-          <li>Built <strong>Sllr Chat</strong> — syncs catalogs with Meta inbox, auto-creates orders from chats</li>
-          <li>Led full <strong>product rebranding</strong> and launched SaaS model for merchant growth</li>
-        </ul>
-      </div>
-      <div class="pv-exp-entry">
-        <div class="pv-exp-header"><span class="pv-exp-role">Group Product Manager</span><span class="pv-exp-period">Oct 2020 – Dec 2024</span></div>
-        <div class="pv-exp-company">Bosta · 4+ years · LogiTech</div>
-        <ul class="pv-exp-bullets">
-          <li>Led product across <strong>Dashboard, Analytics, Wallet, Capital &amp; Box</strong> — 4 PMs</li>
-          <li>Grew merchant base with <strong>free e-commerce platform</strong> + embedded fintech</li>
-          <li>Launched <strong>Bosta Capital</strong> lending product &amp; <strong>digital wallet</strong> for sellers</li>
-        </ul>
-      </div>
-      <div class="pv-exp-entry">
-        <div class="pv-exp-header"><span class="pv-exp-role">Product Manager</span><span class="pv-exp-period">Aug 2017 – Apr 2020</span></div>
-        <div class="pv-exp-company">Luciq (formerly Instabug) · 3 years · SaaS</div>
-        <ul class="pv-exp-bullets">
-          <li>Owned <strong>Feature Requests &amp; Surveys</strong> — used by 25K apps including Figma, Lyft, PayPal</li>
-          <li>Drove adoption across <strong>4B+ devices</strong> via performance &amp; crash reporting</li>
-        </ul>
-      </div>
-      <div class="pv-exp-entry">
-        <div class="pv-exp-header"><span class="pv-exp-role">Product Manager</span><span class="pv-exp-period">Jan 2015 – Jul 2017</span></div>
-        <div class="pv-exp-company">ITWORX Education · 2+ years · EdTech</div>
-        <ul class="pv-exp-bullets">
-          <li>Launched <strong>TeacherKit</strong> (classroom management) &amp; <strong>MathSprint</strong> (gamified K-12 math)</li>
-          <li>Scaled to <strong>8M users</strong>, acquired by school enterprises</li>
-        </ul>
-      </div>
-      <div class="pv-exp-entry">
-        <div class="pv-exp-header"><span class="pv-exp-role">Software Quality Engineering</span><span class="pv-exp-period">Oct 2007 – Jan 2015</span></div>
-        <div class="pv-exp-company">ITWORX · 7+ years</div>
-        <ul class="pv-exp-bullets">
-          <li>Rose through SQE → Senior SQE → <strong>Software Quality Lead</strong></li>
-          <li>Testing activities across multiple enterprise projects</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
 <div class="card">
   <button class="toggle-btn" id="themeBtn" style="grid-column:1/-1;position:absolute;top:14px;right:16px">
     <div class="track"><div class="thumb"></div></div>
@@ -1287,73 +1174,18 @@ body.dark .card {
 
 })();
 
-async function downloadPDF() {
-  var btn = document.getElementById('pdfBtn');
-  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8L3 5h2V1h2v4h2L6 8zM1 10h10v1H1z"/></svg> Generating…';
-  btn.disabled = true;
+function downloadPDF() {
+  var wasDark = document.body.classList.contains('dark');
+  document.body.classList.remove('dark');
+  document.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
+  document.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
 
-  try {
-    var pv = document.getElementById('pdf-view');
-    // Temporarily bring into view for html2canvas
-    pv.style.left = '0';
-    pv.style.top = '0';
-    pv.style.zIndex = '-1';
-    pv.style.visibility = 'visible';
-    await new Promise(function(r){ setTimeout(r, 300); });
+  window.addEventListener('afterprint', function restore() {
+    window.removeEventListener('afterprint', restore);
+    if (wasDark) document.body.classList.add('dark');
+  });
 
-    var canvas = await html2canvas(pv, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      width: 794,
-      windowWidth: 794
-    });
-
-    // Restore hidden state
-    pv.style.left = '-9999px';
-    pv.style.zIndex = '-1';
-    pv.style.visibility = '';
-
-    var { jsPDF } = window.jspdf;
-    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var pdfW = pdf.internal.pageSize.getWidth();
-    var pdfH = pdf.internal.pageSize.getHeight();
-    var footerH = 9;
-    var contentH = pdfH - footerH;
-
-    var imgAspect = canvas.height / canvas.width;
-    var imgH = pdfW * imgAspect;
-    var finalW, finalH, offsetX = 0;
-    if (imgH <= contentH) {
-      finalW = pdfW; finalH = imgH;
-    } else {
-      finalH = contentH;
-      finalW = finalH / imgAspect;
-      offsetX = (pdfW - finalW) / 2;
-    }
-
-    pdf.addImage(canvas.toDataURL('image/jpeg', 0.93), 'JPEG', offsetX, 0, finalW, finalH);
-
-    pdf.setDrawColor(200, 200, 200);
-    pdf.setLineWidth(0.2);
-    pdf.line(14, pdfH - footerH + 1.5, pdfW - 14, pdfH - footerH + 1.5);
-    pdf.setFontSize(7);
-    pdf.setTextColor(150, 150, 150);
-    pdf.text('Interactive version available at:', pdfW / 2, pdfH - 4.5, { align: 'center' });
-    pdf.setFontSize(8);
-    pdf.setTextColor(58, 90, 74);
-    pdf.text('https://kamel-nabil-profile.netlify.app', pdfW / 2, pdfH - 1.8, { align: 'center' });
-
-    pdf.save('kamel-nabil-resume.pdf');
-  } catch(e) {
-    console.error('PDF error:', e);
-  }
-
-  if (wasDark) document.body.classList.add('dark');
-  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8.5L2.5 5H5V1h2v4h2.5L6 8.5zM1 10h10v1H1v-1z"/></svg> Download Resume';
-  btn.disabled = false;
+  window.print();
 }
 </script>
 
