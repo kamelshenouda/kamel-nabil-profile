@@ -239,45 +239,6 @@ body.dark .avail-pill{color:#1a1a1a}
 #pdfBtn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.22)}
 #pdfBtn:active{transform:scale(0.97)}
 body.dark #pdfBtn{color:#1a1a1a}
-@media print {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-  body {
-    background: var(--page-bg) !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    display: block !important;
-  }
-  #pdfBtn, #page-progress, .modal-overlay { display: none !important; }
-  .card {
-    max-width: 100% !important;
-    width: 100% !important;
-    box-shadow: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    min-height: auto !important;
-  }
-  /* Expand all accordions */
-  .exp-body {
-    max-height: none !important;
-    overflow: visible !important;
-    opacity: 1 !important;
-  }
-  .skill-list {
-    max-height: none !important;
-    overflow: visible !important;
-    opacity: 1 !important;
-    margin-top: 6px !important;
-  }
-  /* Hide interactive-only elements */
-  .exp-chevron, .skill-chevron, .toggle-btn, .tip-btn { display: none !important; }
-  /* Reveal all animated-in elements */
-  .reveal { opacity: 1 !important; transform: none !important; }
-  .stats-list .stat-row { opacity: 1 !important; transform: none !important; }
-  /* Avoid breaking entries across pages */
-  .exp-entry { break-inside: avoid; }
-}
 /* Modal overlay */
 .modal-overlay{
   display:none;position:fixed;inset:0;z-index:1000;
@@ -675,6 +636,8 @@ body.dark .card {
 }
 
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="page-progress"></div>
@@ -1174,18 +1137,76 @@ body.dark .card {
 
 })();
 
-function downloadPDF() {
+async function downloadPDF() {
+  var btn = document.getElementById('pdfBtn');
+  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8L3 5h2V1h2v4h2L6 8zM1 10h10v1H1z"/></svg> Generating…';
+  btn.disabled = true;
+
   var wasDark = document.body.classList.contains('dark');
   document.body.classList.remove('dark');
-  document.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
-  document.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
+  await new Promise(function(r){ setTimeout(r, 320); });
 
-  window.addEventListener('afterprint', function restore() {
-    window.removeEventListener('afterprint', restore);
-    if (wasDark) document.body.classList.add('dark');
-  });
+  try {
+    var card = document.querySelector('.card');
+    var canvas = await html2canvas(card, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      backgroundColor: '#faf9f6',
+      onclone: function(clonedDoc) {
+        var c = clonedDoc.querySelector('.card');
+        // Fix: card starts at opacity:0 from CSS animation — override it
+        c.style.cssText += ';opacity:1!important;transform:none!important;animation:none!important;min-height:auto!important;box-shadow:none!important;';
+        // Expand all accordions
+        clonedDoc.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
+        clonedDoc.querySelectorAll('.skill-group').forEach(function(el){ el.classList.add('open'); });
+        // Unlock collapsed panels
+        clonedDoc.querySelectorAll('.exp-body').forEach(function(el){
+          el.style.cssText += ';max-height:none!important;overflow:visible!important;opacity:1!important;transition:none!important;';
+        });
+        clonedDoc.querySelectorAll('.skill-list').forEach(function(el){
+          el.style.cssText += ';max-height:none!important;overflow:visible!important;opacity:1!important;margin-top:6px!important;';
+        });
+        // Reveal animation-hidden elements
+        clonedDoc.querySelectorAll('.reveal,.stats-list .stat-row').forEach(function(el){
+          el.style.cssText += ';opacity:1!important;transform:none!important;';
+        });
+        // Hide UI-only controls
+        ['pdfBtn','page-progress'].forEach(function(id){
+          var el = clonedDoc.getElementById(id);
+          if (el) el.style.display = 'none';
+        });
+        clonedDoc.querySelectorAll('.toggle-btn,.exp-chevron,.skill-chevron,.tip-btn,.modal-overlay').forEach(function(el){
+          el.style.display = 'none';
+        });
+      }
+    });
 
-  window.print();
+    // Scale to fit A4 (210×297mm) in one page
+    var { jsPDF } = window.jspdf;
+    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var pdfW = pdf.internal.pageSize.getWidth();
+    var pdfH = pdf.internal.pageSize.getHeight();
+    var aspect = canvas.height / canvas.width;
+    var imgH = pdfW * aspect;
+    var finalW = pdfW, finalH = imgH, offX = 0, offY = 0;
+    if (imgH > pdfH) {
+      finalH = pdfH;
+      finalW = pdfH / aspect;
+      offX = (pdfW - finalW) / 2;
+    } else {
+      offY = (pdfH - imgH) / 2;
+    }
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', offX, offY, finalW, finalH);
+    pdf.save('kamel-nabil-resume.pdf');
+  } catch(e) {
+    console.error('PDF error:', e);
+  }
+
+  if (wasDark) document.body.classList.add('dark');
+  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 8.5L2.5 5H5V1h2v4h2.5L6 8.5zM1 10h10v1H1v-1z"/></svg> Download Resume';
+  btn.disabled = false;
 }
 </script>
 
