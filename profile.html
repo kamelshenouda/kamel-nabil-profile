@@ -1148,15 +1148,14 @@ async function downloadPDF() {
 
   var wrap = null;
   try {
-    // A4 at 96 dpi
     var A4_W = 794, A4_H = 1123;
 
-    // Build a hidden off-screen wrapper at exact A4 width
+    // Off-screen wrapper at A4 width
     wrap = document.createElement('div');
-    wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + A4_W + 'px;pointer-events:none;z-index:-1;';
+    wrap.style.cssText = 'position:absolute;left:-9999px;top:0;width:' + A4_W + 'px;pointer-events:none;';
     document.body.appendChild(wrap);
 
-    // Deep-clone the card and fix it up
+    // Clone and configure card for PDF
     var clone = document.querySelector('.card').cloneNode(true);
     clone.style.opacity = '1';
     clone.style.transform = 'none';
@@ -1165,6 +1164,16 @@ async function downloadPDF() {
     clone.style.boxShadow = 'none';
     clone.style.width = A4_W + 'px';
     clone.style.maxWidth = 'none';
+
+    // Tighten padding/margins to maximise font size in final PDF
+    var cl = clone.querySelector('.col-left');
+    var cr = clone.querySelector('.col-right');
+    var rn = clone.querySelector('.right-name');
+    if (cl) cl.style.padding = '22px 18px';
+    if (cr) cr.style.padding = '22px 24px';
+    if (rn) { rn.style.marginBottom = '14px'; rn.style.paddingBottom = '12px'; }
+    clone.querySelectorAll('.r-section').forEach(function(el){ el.style.marginBottom = '14px'; });
+    clone.querySelectorAll('.exp-entry').forEach(function(el){ el.style.marginBottom = '10px'; el.style.paddingBottom = '10px'; });
 
     // Expand all accordions
     clone.querySelectorAll('.exp-entry').forEach(function(el){ el.classList.add('open'); });
@@ -1181,40 +1190,37 @@ async function downloadPDF() {
       el.style.opacity = '1'; el.style.transform = 'none';
     });
 
-    // Hide UI-only elements and metric pills
+    // Hide UI-only + metric pills
     clone.querySelectorAll('.toggle-btn,.exp-chevron,.skill-chevron,.tip-btn,.exp-pills').forEach(function(el){
       el.style.display = 'none';
     });
 
     wrap.appendChild(clone);
-    // Let the browser fully render the clone
-    await new Promise(function(r){ setTimeout(r, 400); });
+    await new Promise(function(r){ setTimeout(r, 500); });
 
-    // Measure natural height, then zoom to fill A4 exactly
-    var naturalH = clone.scrollHeight;
-    var zoom = A4_H / naturalH;
-    clone.style.zoom = zoom;
-    wrap.style.height = A4_H + 'px';
-    wrap.style.overflow = 'hidden';
-
-    await new Promise(function(r){ setTimeout(r, 150); });
-
-    var canvas = await html2canvas(wrap, {
+    // Capture at natural size
+    var src = await html2canvas(wrap, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       logging: false,
-      backgroundColor: '#faf9f6',
-      width: A4_W,
-      height: A4_H
+      backgroundColor: '#faf9f6'
     });
 
     document.body.removeChild(wrap);
     wrap = null;
 
-    var { jsPDF } = window.jspdf;
-    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
+    // Scale to fill A4 exactly using canvas drawImage
+    var out = document.createElement('canvas');
+    out.width  = A4_W * 2;
+    out.height = A4_H * 2;
+    var ctx = out.getContext('2d');
+    ctx.fillStyle = '#faf9f6';
+    ctx.fillRect(0, 0, out.width, out.height);
+    ctx.drawImage(src, 0, 0, out.width, out.height);
+
+    var pdf = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    pdf.addImage(out.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
     pdf.save('kamel-nabil-resume.pdf');
   } catch(e) {
     console.error('PDF error:', e);
