@@ -122,6 +122,34 @@ footer .wrap{padding-block:26px 34px;display:flex;flex-wrap:wrap;gap:8px 28px;fo
   .palette{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:640px){.cards{grid-template-columns:1fr 1fr}.wrap{padding-inline:16px}.hero .bar nav{display:none}}
 @media (prefers-reduced-motion:reduce){.card{transition:none}}
+/* section tabs */
+.tabsbar{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:30px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:19px 0 16px;margin-bottom:-1px;font:600 11.5px var(--font);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tabs button:hover{color:var(--head)}
+.tabs button[aria-selected="true"]{color:var(--head);border-bottom-color:var(--gold)}
+.tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+main{padding-block:64px 88px!important}
+/* what you love */
+.love{columns:4 230px;column-gap:16px}
+.lv{break-inside:avoid;margin:0 0 16px;background:var(--sheet);box-shadow:0 1px 0 var(--line)}
+.lv img,.lv video{width:100%;height:auto;display:block}
+.lv button{all:unset;display:block;cursor:zoom-in}
+.lv button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.lv figcaption{padding:10px 12px 14px;font-size:13px;line-height:1.5;color:var(--ink2)}
+.lv.vid figcaption::before{content:"Video · ";font-weight:600;color:var(--gold)}
+dialog.lb{max-width:none;max-height:none;width:100vw;height:100dvh;margin:0;padding:0;border:0;background:rgba(12,12,12,.95);color:#EEE}
+dialog.lb[open]{display:grid;grid-template-rows:1fr auto}
+dialog.lb::backdrop{background:rgba(12,12,12,.95)}
+.lb figure{margin:0;display:grid;grid-template-rows:1fr auto;min-height:0;padding:14px}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;justify-self:center;align-self:center;min-height:0}
+.lb figcaption{text-align:center;font-size:14px;padding-top:10px;color:#DDD}
+.lbnav{display:flex;gap:8px;justify-content:center;padding:0 0 16px}
+.lbnav button{appearance:none;border:1px solid #555;background:#1b1b1b;color:#EEE;font:600 14px var(--font);padding:9px 14px;cursor:pointer}
+.lbnav button:focus-visible{outline:2px solid var(--gold)}
+@media (max-width:640px){.love{columns:2 140px;column-gap:10px}.lv{margin-bottom:10px}.tabs{gap:22px}}
+
 </style>
 
 <header class="hero">
@@ -131,7 +159,7 @@ footer .wrap{padding-block:26px 34px;display:flex;flex-wrap:wrap;gap:8px 28px;fo
     <h1><b>AZAD</b> Apartment</h1>
     <div class="rule" aria-hidden="true"></div>
     <p>A 195 m² ground-floor apartment with a 90 m² garden, redesigned from its concrete shell: warm, minimal, built around an open kitchen and a garden facing south-south-east.</p>
-    <div class="cta"><a class="btn solid" href="renders.html">See the renders</a><a class="btn ghost" href="plan.html">See the plan</a></div>
+    <div class="cta"><a class="btn solid" href="plan.html">See the plan</a><a class="btn ghost" href="3d.html">Walk through it</a></div>
   </div>
 </header>
 
@@ -143,24 +171,31 @@ footer .wrap{padding-block:26px 34px;display:flex;flex-wrap:wrap;gap:8px 28px;fo
     <div><span>Updated</span><b>28 Sep 2026</b></div>
   </div>
 </div></div>
+<nav class="tabsbar" aria-label="Sections"><div class="wrap"><div class="tabs" role="tablist">
+  <button type="button" role="tab" id="tab-project" aria-controls="project" aria-selected="true">The project</button>
+  <button type="button" role="tab" id="tab-spaces" aria-controls="spaces" aria-selected="false" tabindex="-1">The spaces</button>
+  <button type="button" role="tab" id="tab-working" aria-controls="working" aria-selected="false" tabindex="-1">Working together</button>
+  <button type="button" role="tab" id="tab-phases" aria-controls="phases" aria-selected="false" tabindex="-1">Finishing phases</button>
+  <button type="button" role="tab" id="tab-materials" aria-controls="materials" aria-selected="false" tabindex="-1">Materials</button>
+</div></div></nav>
 <div class="wrap">
   <main>
-    <section aria-labelledby="explore">
+    <section id="project" role="tabpanel" aria-labelledby="tab-project">
       <div class="sh"><div class="eyebrow">The project</div><h2 id="explore">Explore</h2><p>Every view is drawn from the same centimetre model: read it, walk it, see it, and build it.</p></div>
       <div class="cards">
         <a class="card" href="plan.html"><div class="thumb"><img src="img/plan-thumb.jpg" alt="Floor plan" loading="lazy"></div><div class="body"><div class="n">01 · Plan</div><h3>Layout &amp; garden</h3><p>As built, Rev 3.1 and Rev 4 to scale, with every survey dimension.</p></div></a>
-        <a class="card" href="3d.html"><div class="thumb"><img src="img/3d-thumb.jpg" alt="3D model" loading="lazy"></div><div class="body"><div class="n">03 · 3D</div><h3>Walk it freely</h3><p>The live model: switch between As built, Rev 3.1 and Rev 4, open and close the doors, change the light.</p></div></a>
-        <a class="card" href="renders.html"><div class="thumb"><img src="img/renders-thumb.jpg" alt="Render" loading="lazy"></div><div class="body"><div class="n">04 · Renders</div><h3>Photoreal views</h3><p>Path-traced views of the main spaces, by day and by night.</p></div></a>
-        <a class="card" href="package.html"><div class="thumb"><img src="img/package-thumb.jpg" alt="Drawings" loading="lazy"></div><div class="body"><div class="n">05 · Package</div><h3>Drawings &amp; specs</h3><p>Your requirements, lighting, power and data, elevations, schedules.</p></div></a>
+        <a class="card" href="3d.html"><div class="thumb"><img src="img/3d-thumb.jpg" alt="3D model" loading="lazy"></div><div class="body"><div class="n">02 · 3D</div><h3>Walk it freely</h3><p>As built, open kitchen or open plan; furnished or empty; porcelain or wood floors; with the real sun on any day.</p></div></a>
+        <a class="card" href="renders.html"><div class="thumb"><img src="img/renders-thumb.jpg" alt="Render" loading="lazy"></div><div class="body"><div class="n">03 · Renders</div><h3>Photoreal views</h3><p>Path-traced views of the main spaces, by day and by night.</p></div></a>
+        <a class="card" href="package.html"><div class="thumb"><img src="img/package-thumb.jpg" alt="Drawings" loading="lazy"></div><div class="body"><div class="n">04 · Package</div><h3>Drawings &amp; specs</h3><p>Your requirements, lighting, power and data, elevations, schedules.</p></div></a>
       </div>
     </section>
 
-    <section aria-labelledby="rooms">
+    <section id="spaces" role="tabpanel" aria-labelledby="tab-spaces" hidden>
       <div class="sh"><div class="eyebrow">The spaces</div><h2 id="rooms">Room by room</h2><p>What each space does, and why it's drawn the way it is. The photoreal views are on the Renders page.</p></div>
       <div class="rooms"><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-arrival.jpg" alt="Plan of arrival and dining" loading="lazy"></a></figure><div class="txt"><div class="dims">Reception + dining 3.79 × 8.70 m</div><h3>Arrival and dining</h3><p>You step straight into the dining area. The lobby on your left hides behind a flush door and takes the coats, shoes, keys and the electricity board, so nothing clutters the way in.</p><ul><li>Dining for 8 across the room, so the path to the garden stays clear</li><li>Your desk in the far-right corner, shelves above</li><li>The white Yamaha on the west wall, art above it</li><li>Warm LED coves at the ceiling edges</li></ul><div class="go"><a href="3d.html#entrance">3D →</a><a href="package.html#elev">Lobby elevation →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-kitchen.jpg" alt="Plan of the kitchen" loading="lazy"></a></figure><div class="txt"><div class="dims">Kitchen 3.90 × 3.35 m · island 2.10 × 0.95 m</div><h3>The kitchen</h3><p>Both kitchen walls come down, so the kitchen joins the living spaces. An L-shaped fluted-glass screen in oak frames slides out to close it when you cook something loud or messy.</p><ul><li>Tall bank: integrated fridge, oven and microwave at eye level, the larder right beside it</li><li>Travertine worktop and splashback, open oak shelves lit from below</li><li>Fluted-oak island with a travertine waterfall top and 4 stools</li><li>The washing up goes to the dirty kitchen in the utility room</li></ul><div class="go"><a href="3d.html#island">3D at the island →</a><a href="package.html#elev">Kitchen elevations →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-living.jpg" alt="Plan of family living" loading="lazy"></a></figure><div class="txt"><div class="dims">Family living 3.77 × 5.34 m</div><h3>Family living</h3><p>The everyday room sits in the garden bay, a step from the lawn. The oak panel wall from your video closes it off from the reception when the kids are up and guests are over.</p><ul><li>Oak slats on acoustic felt behind the TV: it backs onto the office</li><li>A deep corner sofa in ivory bouclé, sage and terracotta linen cushions</li><li>Round travertine table on a wool rug</li><li>3 m sliding doors to the terrace</li></ul><div class="go"><a href="3d.html#living">3D →</a><a href="package.html#elev">TV wall elevation →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-openplan.jpg" alt="Plan of reception" loading="lazy"></a></figure><div class="txt"><div class="dims">Reception + dining 3.79 × 8.70 m</div><h3>Reception</h3><p>The hosting room: two sofas facing across a travertine table, the garden door beside them, and the whole of the open plan in view. With the panels open, 20 to 30 guests move freely.</p><ul><li>Two sofas and two lounge chairs</li><li>Art above the west sofa and the piano</li><li>Garden door to the pergola terrace</li></ul><div class="go"><a href="3d.html#reception">3D →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-kids.jpg" alt="Plan of the kids' room" loading="lazy"></a></figure><div class="txt"><div class="dims">Kids' room 3.92 × 4.32 m</div><h3>The kids' room</h3><p>One room for both children for the next ten years: a toddler bed and a cot now, two beds and two desks later, and a timber deck outside the sliding door.</p><ul><li>Wardrobe wall along the corridor side</li><li>Changing unit now, a desk later</li><li>Soft sage accents, oak floor</li></ul><div class="go"><a href="3d.html#kids">3D →</a><a href="plan.html">Now vs later on the plan →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-master.jpg" alt="Plan of master bedroom" loading="lazy"></a></figure><div class="txt"><div class="dims">Master bedroom 3.85 × 4.96 m</div><h3>Master bedroom</h3><p>A calm room with its own door to a private gravel courtyard, the dressing room and bath behind.</p><ul><li>Upholstered bed between two oak bedside tables, lamps on switched sockets</li><li>A pair of dune prints above the bed</li><li>Bench at the foot of the bed</li></ul><div class="go"><a href="3d.html#master">3D →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-garden.jpg" alt="Plan of the garden" loading="lazy"></a></figure><div class="txt"><div class="dims">Garden 17.90 × 8.62 m, facing south-south-east</div><h3>The garden</h3><p>The garden is designed for kids and for guests: a pergola terrace at floor level with an outdoor lounge, dining for 10 and an outdoor kitchen, a play lawn, and tall screen hedges against the blocks that overlook it.</p><ul><li>Aluminium louvred pergola, bronze</li><li>Outdoor kitchen: BBQ, sink, prep</li><li>Play lawn with a playhouse and decks outside the bedrooms</li><li>Planting still to design together</li></ul><div class="go"><a href="3d.html#garden">3D on the lawn →</a></div></div></article></div>
     </section>
 
-    <section aria-labelledby="where" class="band">
+    <section id="working" role="tabpanel" aria-labelledby="tab-working" class="band" hidden>
       <div class="sh"><div class="eyebrow">Working together</div><h2 id="where">The plan, step by step</h2><p>Seven steps from the concrete shell to moving in. We finish each one together before the next.</p></div>
       <ol class="road">
         <li><span class="no">1</span><div><h3>Brief and survey</h3><p>Your household, must-haves and style photos; the architect's as-built plan and the site video, read and redrawn in centimetres.</p></div><span class="chip done">Done</span></li>
@@ -169,12 +204,12 @@ footer .wrap{padding-block:26px 34px;display:flex;flex-wrap:wrap;gap:8px 28px;fo
         <li><span class="no">4</span><div><h3>Room by room</h3><p>Kitchen, bathrooms, joinery, lighting plan, flooring, ceilings, and the furniture layout with real dimensions.</p></div><span class="chip">Next</span></li>
         <li><span class="no">5</span><div><h3>3D</h3><p>An interactive 3D model of the apartment that you can orbit and walk through in your browser, with materials applied, plus a few perspective images per room. The model is accurate and good enough to make decisions from. The final photoreal renders and the 360° tour come once the layout is final and your real furniture is chosen.</p></div><span class="chip">Started</span></li>
         <li><span class="no">6</span><div><h3>Documentation</h3><p>Dimensioned plans, electrical and lighting points, finish schedules, and a shopping and specification list your contractor can quote from.</p></div><span class="chip">Draft ready</span></li>
-        <li><span class="no">7</span><div><h3>Finishing phases</h3><p>The works on site, in the order they have to happen, from the shell to furnishing and moving in. Every phase is listed below.</p></div><span class="chip">Planned</span></li>
+        <li><span class="no">7</span><div><h3>Finishing phases</h3><p>The works on site, in the order they have to happen, from the shell to furnishing and moving in. Every phase is in <a href="#phases" data-tab="phases">Finishing phases</a>.</p></div><span class="chip">Planned</span></li>
       </ol>
     </section>
 
-    <section aria-labelledby="phases">
-      <div class="sh"><div class="eyebrow">Step 7</div><h2 id="phases">Finishing phases, in order</h2><p>What happens on site, and why each phase comes before the next: messy, wet and hidden work first; finishes, joinery and furniture last.</p></div>
+    <section id="phases" role="tabpanel" aria-labelledby="tab-phases" hidden>
+      <div class="sh"><div class="eyebrow">Step 7</div><h2 id="phases-h">Finishing phases, in order</h2><p>What happens on site, and why each phase comes before the next: messy, wet and hidden work first; finishes, joinery and furniture last.</p></div>
       <ol class="phases">
         <li class="gate"><b>Approvals and sign-offs</b><span>Compound approval for the works and the pergola; the structural engineer's sign-off to remove the kitchen walls; the final layout and a contractor quote from the specification list.</span><small>Before anything is touched</small></li>
         <li><b>Site set-up, protection and demolition</b><span>Protect the entrance and the building lobby, then take down the kitchen walls and the maid's WC walls and clear the rubble.</span><small>First on site</small></li>
@@ -198,7 +233,7 @@ footer .wrap{padding-block:26px 34px;display:flex;flex-wrap:wrap;gap:8px 28px;fo
       <p class="pnote">Order your long-lead items early, while the site is still in its wet phases: kitchen and joinery (6–10 weeks), the fluted glass and panel wall, sanitaryware, the AC units and the engineered oak.</p>
     </section>
 
-    <section aria-labelledby="palette">
+    <section id="materials" role="tabpanel" aria-labelledby="tab-materials" hidden>
       <div class="sh"><div class="eyebrow">Materials</div><h2 id="palette">The palette</h2><p>Drawn from your 19 photos and the panel-wall video.</p></div>
       <div class="palette">
         <div class="sw"><i style="background:#EDE7DD"></i><b>Warm white</b>Limewash walls, ceilings</div>
@@ -208,9 +243,43 @@ footer .wrap{padding-block:26px 34px;display:flex;flex-wrap:wrap;gap:8px 28px;fo
         <div class="sw"><i style="background:#A5AE95"></i><b>Sage + terracotta</b>Linen cushions, accents</div>
         <div class="sw"><i style="background:#C9A064"></i><b>Brushed brass</b>Pulls, taps, trims</div>
       </div>
+      <div class="sh"><div class="eyebrow">What you love</div><h2 id="love">Your 20 references</h2><p>The 19 photos and the panel-wall video you sent, which the palette and the design come from. Tap a photo to see it large.</p></div>
+      <div class="love"><figure class="lv vid"><video src="img/love/panel-wall.mp4" poster="img/love/panel-wall.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Your video: a slatted oak wall that pivots and slides away to open the TV lounge."></video><figcaption>Your video: a slatted oak wall that pivots and slides away to open the TV lounge.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/02.jpg"><img src="img/love/02-s.jpg" width="486" height="640" alt="Living: warm white walls, ceiling coves, linear AC slots, light herringbone oak, one curved wall." loading="lazy"></button><figcaption>Living: warm white walls, ceiling coves, linear AC slots, light herringbone oak, one curved wall.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/03.jpg"><img src="img/love/03-s.jpg" width="487" height="640" alt="Kitchen: handleless doors, oak shelves with built-in LED, rounded island end." loading="lazy"></button><figcaption>Kitchen: handleless doors, oak shelves with built-in LED, rounded island end.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/04.jpg"><img src="img/love/04-s.jpg" width="640" height="480" alt="The house you visited: stone-top island with a lower oak table joined on." loading="lazy"></button><figcaption>The house you visited: stone-top island with a lower oak table joined on.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/05.jpg"><img src="img/love/05-s.jpg" width="640" height="480" alt="The same island up close: white stone over a warm oak breakfast bar, black stools." loading="lazy"></button><figcaption>The same island up close: white stone over a warm oak breakfast bar, black stools.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/06.jpg"><img src="img/love/06-s.jpg" width="640" height="480" alt="Open kitchen: a full-height oak wall around the tall units and a long island with stools." loading="lazy"></button><figcaption>Open kitchen: a full-height oak wall around the tall units and a long island with stools.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/07.jpg"><img src="img/love/07-s.jpg" width="640" height="480" alt="The oak wall close up, with a stone worktop and warm light under the shelves." loading="lazy"></button><figcaption>The oak wall close up, with a stone worktop and warm light under the shelves.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/08.jpg"><img src="img/love/08-s.jpg" width="480" height="640" alt="Hidden scullery behind an oak panel door: the dirty kitchen." loading="lazy"></button><figcaption>Hidden scullery behind an oak panel door: the dirty kitchen.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/09.jpg"><img src="img/love/09-s.jpg" width="483" height="640" alt="Foyer: tall oak cupboard, lit open niches and a bench with a shoe shelf." loading="lazy"></button><figcaption>Foyer: tall oak cupboard, lit open niches and a bench with a shoe shelf.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/10.jpg"><img src="img/love/10-s.jpg" width="510" height="640" alt="Desk behind the sofa, with kitchen and dining along one long axis." loading="lazy"></button><figcaption>Desk behind the sofa, with kitchen and dining along one long axis.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/11.jpg"><img src="img/love/11-s.jpg" width="364" height="640" alt="Laundry: washer and dryer stacked in an oak column, with a sink beside them." loading="lazy"></button><figcaption>Laundry: washer and dryer stacked in an oak column, with a sink beside them.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/12.jpg"><img src="img/love/12-s.jpg" width="391" height="640" alt="Bathroom: mocha plaster, beige stone, a lit mirror with rounded corners, a floating oak vanity." loading="lazy"></button><figcaption>Bathroom: mocha plaster, beige stone, a lit mirror with rounded corners, a floating oak vanity.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/13.jpg"><img src="img/love/13-s.jpg" width="380" height="640" alt="Bathroom: terrazzo, a sage vanity, brushed brass." loading="lazy"></button><figcaption>Bathroom: terrazzo, a sage vanity, brushed brass.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/14.jpg"><img src="img/love/14-s.jpg" width="380" height="640" alt="Bathroom: powder-blue walls, terrazzo, a fluted blue vanity and a backlit mirror." loading="lazy"></button><figcaption>Bathroom: powder-blue walls, terrazzo, a fluted blue vanity and a backlit mirror.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/15.jpg"><img src="img/love/15-s.jpg" width="640" height="422" alt="Bathroom: slatted oak wall, twin vessel basins, brass taps and a freestanding tub." loading="lazy"></button><figcaption>Bathroom: slatted oak wall, twin vessel basins, brass taps and a freestanding tub.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/16.jpg"><img src="img/love/16-s.jpg" width="640" height="569" alt="Double vanity in oak with a marble top, pale blue hexagon tiles and black fittings." loading="lazy"></button><figcaption>Double vanity in oak with a marble top, pale blue hexagon tiles and black fittings.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/17.jpg"><img src="img/love/17-s.jpg" width="505" height="640" alt="Bedroom: low oak bed, light coves between the beams, full-height garden glazing." loading="lazy"></button><figcaption>Bedroom: low oak bed, light coves between the beams, full-height garden glazing.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/18.jpg"><img src="img/love/18-s.jpg" width="371" height="640" alt="Door styles: flush, shadow gap, pocket. We will pick one detail for the whole flat." loading="lazy"></button><figcaption>Door styles: flush, shadow gap, pocket. We will pick one detail for the whole flat.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/19.jpg"><img src="img/love/19-s.jpg" width="376" height="640" alt="Colour pairing: Mocha Mousse over beige stone." loading="lazy"></button><figcaption>Colour pairing: Mocha Mousse over beige stone.</figcaption></figure><figure class="lv"><button type="button" data-full="img/love/20.jpg"><img src="img/love/20-s.jpg" width="376" height="640" alt="Colour pairing: sage green over limestone." loading="lazy"></button><figcaption>Colour pairing: sage green over limestone.</figcaption></figure></div>
+      <dialog class="lb" id="lb" aria-label="Reference viewer"><figure><img id="lbimg" alt=""><figcaption id="lbcap"></figcaption></figure>
+        <div class="lbnav"><button type="button" id="lbprev" aria-label="Previous">←</button><button type="button" id="lbnext" aria-label="Next">→</button><button type="button" id="lbclose">Close</button></div></dialog>
     </section>
   </main>
 </div>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tabs [role=tab]')), bar=document.querySelector('.tabsbar');
+  var ids=tabs.map(function(t){return t.getAttribute('aria-controls')});
+  function show(id,focus,scroll){
+    if(ids.indexOf(id)<0)id='project';
+    tabs.forEach(function(t){var on=t.getAttribute('aria-controls')===id;t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1;if(on&&focus)t.focus();});
+    ids.forEach(function(p){document.getElementById(p).hidden=(p!==id)});
+    try{history.replaceState(null,'','#'+id)}catch(e){}
+    if(scroll&&window.scrollY>bar.offsetTop)window.scrollTo(0,bar.offsetTop);
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){show(t.getAttribute('aria-controls'),false,true)});
+    t.addEventListener('keydown',function(e){var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();show(ids[(i+d+ids.length)%ids.length],true,false)});
+  });
+  [].forEach.call(document.querySelectorAll('[data-tab]'),function(a){a.addEventListener('click',function(e){e.preventDefault();show(a.getAttribute('data-tab'),false,true)})});
+  show((location.hash||'').slice(1),false,false);
+  window.addEventListener('hashchange',function(){show((location.hash||'').slice(1),false,false)});
+  // references: full-size viewer
+  var lb=document.getElementById('lb'); if(!lb||!lb.showModal)return;
+  var btns=[].slice.call(document.querySelectorAll('.lv button')), img=document.getElementById('lbimg'), cap=document.getElementById('lbcap'), cur=0;
+  function open(i){cur=(i+btns.length)%btns.length;var b=btns[cur];img.src=b.getAttribute('data-full');img.alt=b.querySelector('img').alt;cap.textContent=b.querySelector('img').alt;}
+  btns.forEach(function(b,i){b.addEventListener('click',function(){open(i);lb.showModal();})});
+  document.getElementById('lbprev').onclick=function(){open(cur-1)};
+  document.getElementById('lbnext').onclick=function(){open(cur+1)};
+  document.getElementById('lbclose').onclick=function(){lb.close()};
+  lb.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')open(cur-1);if(e.key==='ArrowRight')open(cur+1)});
+  lb.addEventListener('click',function(e){if(e.target===lb)lb.close()});
+})();
+</script>
 <footer><div class="wrap"><span>AZAD Apartment · interior architecture</span><span>Drawn from the as-built survey · verify on site</span><span>Not for construction</span></div></footer>
 
 </html>
