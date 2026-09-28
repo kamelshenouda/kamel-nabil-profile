@@ -152,7 +152,7 @@ h3{font-weight:600}
     <details class="sec">
       <summary><span>Keys &amp; mouse</span><em>arrows · W S · A D</em></summary>
       <div class="help">
-      <b>Keyboard:</b> arrow keys move forward, back, left and right · <kbd>W</kbd> <kbd>S</kbd> zoom in and out · <kbd>A</kbd> <kbd>D</kbd> turn left and right · double-tap <kbd>W</kbd> or <kbd>S</kbd> and hold to tilt up or down.<br>
+      <b>Keyboard:</b> arrow keys move forward, back, left and right · <kbd>W</kbd> <kbd>S</kbd> zoom in and out · <kbd>A</kbd> <kbd>D</kbd> look left and right · double-tap <kbd>W</kbd> or <kbd>S</kbd> and hold to tilt up or down.<br>
       <b>Zoom:</b> the + and − buttons on the model, the mouse wheel, pinch, or W / S. ⤢ shows the whole apartment again.<br>
       <b>Overview:</b> drag to orbit, right-drag to pan.<br>
       <b>Dimensions:</b> room widths and lengths in metres, inside the walls: on the room labels from above, on the floor lines when standing.<br>
@@ -471,7 +471,7 @@ document.getElementById('zout').addEventListener('click',function(){zoomBy(1.25)
 document.getElementById('zall').addEventListener('click',function(){goto('overview');});
 renderer.domElement.addEventListener('wheel',function(e){ if(mode!=='eye')return; e.preventDefault(); zoomBy(e.deltaY>0?1.06:0.94); },{passive:false});
 
-// keyboard: arrows move (forward, back, sideways), W/S zoom in/out, A/D turn left/right
+// keyboard: arrows move (forward, back, sideways), W/S zoom in/out, A/D look left/right
 var KEYS=['arrowup','arrowdown','arrowleft','arrowright','w','s','a','d'];
 // double-tap W (or S) and hold to tilt the view up (or down) instead of zooming
 var lastTap={}, tilt={};
@@ -500,10 +500,9 @@ function walk(dt){
     var mv=dir.multiplyScalar(f).add(right.multiplyScalar(sd)).multiplyScalar(speed*dt);
     camera.position.add(mv); controls.target.add(mv);
   }
-  if(rt){                                               // turn: standing turns on the spot, overview orbits the model
-    var ang=rt*1.1*dt, axis=new T.Vector3(0,1,0);
-    if(eye){ var v=controls.target.clone().sub(camera.position).applyAxisAngle(axis,ang); controls.target.copy(camera.position).add(v); }
-    else { var u=camera.position.clone().sub(controls.target).applyAxisAngle(axis,ang); camera.position.copy(controls.target).add(u); }
+  if(rt){                                               // look left / right: turn on the spot, standing or from above (drag still orbits)
+    var ang=rt*0.9*dt, axis=new T.Vector3(0,1,0);
+    var v=controls.target.clone().sub(camera.position).applyAxisAngle(axis,ang); controls.target.copy(camera.position).add(v);
   }
   if(tl){                                               // tilt: standing looks up/down, overview swings over or down to the side
     var up=new T.Vector3(0,1,0), vv=controls.target.clone().sub(camera.position);
