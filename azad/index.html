@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<meta charset="utf-8">
+<title>AZAD Apartment</title>
+<meta name="description" content="A 195 m² AZAD apartment with a 90 m² garden: layout, photoreal renders, 360 tour, 3D walkthrough and design package.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..800;1,300..500&display=swap">
+<style>
+/* Theme taken from the AZAD Views brochure: warm olive, navy, sand gold, soft grey; Montserrat throughout */
+:root{
+  --olive:#7B7258; --olive-deep:#6A624B; --navy:#0C3B5C; --gold:#B79565; --grey:#E3E3E3; --charcoal:#403F41;
+  --paper:#F1F0EC; --sheet:#FFFFFF; --ink:#23252A; --ink2:#55585E; --muted:#7A7C80; --line:#D9D8D3;
+  --head:var(--navy); --link:var(--navy); --on-olive:#FFFFFF; --on-olive2:rgba(255,255,255,.78);
+  --font:"Montserrat","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--olive:#4A4535;--olive-deep:#3E3A2C;--navy:#9DB8CF;--gold:#CDAE7E;--grey:#26272A;--charcoal:#141416;
+  --paper:#18191B;--sheet:#1F2023;--ink:#ECEBE6;--ink2:#C3C3BE;--muted:#9A9A95;--line:#34353A;--head:#E9E6DD;--link:#CDAE7E}}
+:root[data-theme="dark"]{color-scheme:dark;--olive:#4A4535;--olive-deep:#3E3A2C;--navy:#9DB8CF;--gold:#CDAE7E;--grey:#26272A;--charcoal:#141416;
+  --paper:#18191B;--sheet:#1F2023;--ink:#ECEBE6;--ink2:#C3C3BE;--muted:#9A9A95;--line:#34353A;--head:#E9E6DD;--link:#CDAE7E}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.7 var(--font);margin:0;font-variant-numeric:lining-nums tabular-nums}
+a{color:var(--link)}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:24px}
+.eyebrow{font:600 11.5px/1.2 var(--font);letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+h1,h2,h3{font-family:var(--font);margin:0;text-wrap:balance;color:var(--head)}
+/* hero: the brochure's olive cover */
+.hero{background:var(--olive);color:var(--on-olive)}
+.hero .bar .wrap{display:flex;justify-content:space-between;align-items:center;padding-block:22px;font:500 11.5px var(--font);letter-spacing:.2em;text-transform:uppercase;color:var(--on-olive2)}
+.hero .bar a{color:var(--on-olive);text-decoration:none;margin-left:22px;opacity:.85}
+.hero .bar a:hover,.hero .bar a:focus-visible{opacity:1;color:var(--gold)}
+.hero .copy{padding-block:clamp(48px,9vw,120px) clamp(48px,7vw,88px);display:grid;gap:18px;justify-items:start}
+.hero h1{color:var(--on-olive);font:300 clamp(48px,8.4vw,112px)/.98 var(--font);letter-spacing:-.02em}
+.hero h1 b{font-weight:600}
+.hero .rule{width:88px;height:2px;background:var(--gold)}
+.hero p{margin:0;max-width:56ch;font-size:clamp(16px,1.5vw,19px);font-weight:300;color:var(--on-olive2)}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 12.5px var(--font);letter-spacing:.14em;text-transform:uppercase;padding:14px 20px;text-decoration:none;border-radius:0}
+.btn.solid{background:#fff;color:#4A4535}
+.btn.ghost{border:1.5px solid var(--gold);color:#fff}
+.btn:hover{filter:brightness(1.05)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+/* facts: soft grey band */
+.factsband{background:var(--grey)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.facts div{padding:22px 20px 22px 0;display:grid;gap:4px;border-right:1px solid var(--line)}
+.facts div:last-child{border-right:0}
+.facts div+div{padding-left:22px}
+.facts b{font:500 18px/1.3 var(--font);color:var(--navy)}
+.facts span{font:600 10.5px var(--font);letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+main{display:grid;gap:96px;padding-block:80px 88px}
+section{display:grid;gap:30px}
+.sh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 40px;align-items:end}
+.sh .eyebrow{grid-column:1/-1}
+.sh h2{font:300 clamp(32px,4.2vw,52px)/1.05 var(--font);letter-spacing:-.01em}
+.sh p{margin:0;max-width:52ch;color:var(--ink2)}
+/* explore cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:18px}
+.card{display:grid;grid-template-rows:auto 1fr;background:var(--sheet);color:inherit;text-decoration:none;border-top:3px solid var(--gold);box-shadow:0 1px 0 var(--line);transition:transform .25s ease,box-shadow .25s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(35,37,42,.12)}
+.card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.card .thumb{aspect-ratio:4/3;overflow:hidden;background:var(--grey)}
+.card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.card .body{padding:16px 16px 20px;display:grid;gap:6px;align-content:start}
+.card .n{font:600 10.5px var(--font);letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.card h3{font:600 17px/1.25 var(--font)}
+.card p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink2)}
+/* rooms */
+.rooms{display:grid;gap:72px}
+.room{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:44px;align-items:center}
+.room:nth-child(even) .shot{order:2}
+.room .shot{margin:0;background:var(--sheet);padding:10px;box-shadow:0 1px 0 var(--line)}
+.room .shot img{width:100%;height:auto;display:block}
+.room .txt{display:grid;gap:14px;align-content:center}
+.room h3{font:300 clamp(28px,2.8vw,38px)/1.1 var(--font)}
+.room p{margin:0;color:var(--ink2)}
+.room ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:14px;color:var(--ink2)}
+.room li{display:grid;grid-template-columns:22px 1fr}
+.room li::before{content:"";width:10px;height:2px;background:var(--gold);margin-top:11px}
+.go{display:flex;flex-wrap:wrap;gap:8px 20px;font:600 11.5px var(--font);letter-spacing:.14em;text-transform:uppercase}
+.go a{text-decoration:none;color:var(--link);border-bottom:2px solid var(--gold);padding-bottom:2px}
+.dims{font:600 10.5px var(--font);letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
+/* the plan of steps: olive band, like the brochure's map page */
+.band{background:var(--olive);box-shadow:0 0 0 100vmax var(--olive);clip-path:inset(-72px -100vmax);color:var(--on-olive)}
+.band .sh h2{color:var(--on-olive)}
+.band .sh p{color:var(--on-olive2)}
+.road{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid rgba(255,255,255,.22)}
+.road li{display:grid;grid-template-columns:64px minmax(0,1fr) 150px;gap:6px 24px;padding:22px 0;border-bottom:1px solid rgba(255,255,255,.22);align-items:start}
+.road .no{font:300 38px/1 var(--font);color:var(--gold)}
+.road h3{font:600 19px/1.3 var(--font);color:#fff}
+.road p{margin:6px 0 0;color:var(--on-olive2);font-size:15px;max-width:72ch}
+.road .note{font-size:13px;font-style:italic;opacity:.85}
+.chip{justify-self:end;font:600 10px var(--font);letter-spacing:.2em;text-transform:uppercase;padding:6px 10px;border:1px solid rgba(255,255,255,.4);color:#fff;white-space:nowrap}
+.chip.done{background:var(--gold);border-color:var(--gold);color:#2E2A20}
+.chip.now{background:#fff;border-color:#fff;color:var(--olive-deep)}
+.road li.cur{background:rgba(0,0,0,.08);box-shadow:-24px 0 0 rgba(0,0,0,.08),24px 0 0 rgba(0,0,0,.08)}
+/* finishing phases */
+.phases{list-style:none;margin:0;padding:0;counter-reset:ph;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 48px}
+.phases li{counter-increment:ph;display:grid;grid-template-columns:52px minmax(0,1fr);gap:4px 14px;padding:18px 0;border-top:1px solid var(--line);break-inside:avoid}
+.phases li::before{content:counter(ph,decimal-leading-zero);font:300 26px/1 var(--font);color:var(--gold);grid-row:span 3}
+.phases b{font:600 15.5px/1.35 var(--font);color:var(--head)}
+.phases span{font-size:14px;color:var(--ink2)}
+.phases small{font:600 10px var(--font);letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.phases li.gate b{color:var(--gold)}
+.pnote{margin:0;font-size:14px;color:var(--ink2);max-width:80ch;border-left:3px solid var(--gold);padding-left:14px}
+.palette{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px}
+.sw{display:grid;gap:8px;font-size:12.5px;line-height:1.45;color:var(--ink2)}
+.sw i{display:block;aspect-ratio:1/1;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.sw b{font:600 13.5px var(--font);color:var(--head)}
+footer{background:var(--charcoal);color:rgba(255,255,255,.7)}
+footer .wrap{padding-block:26px 34px;display:flex;flex-wrap:wrap;gap:8px 28px;font:500 11px var(--font);letter-spacing:.16em;text-transform:uppercase}
+@media (max-width:900px){.room{grid-template-columns:1fr;gap:20px}.room:nth-child(even) .shot{order:0}.facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts div:nth-child(2){border-right:0}.facts div:nth-child(3){padding-left:0}
+  .sh{grid-template-columns:1fr}
+  .road li{grid-template-columns:44px minmax(0,1fr)}.road .chip{grid-column:2;justify-self:start}.road .no{font-size:28px}
+  .phases{grid-template-columns:1fr}
+  .palette{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.cards{grid-template-columns:1fr 1fr}.wrap{padding-inline:16px}.hero .bar nav{display:none}}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+
+<header class="hero">
+  <div class="bar"><div class="wrap"><span>195 m² + 90 m² garden</span><nav aria-label="Site"><a href="plan.html">Plan</a><a href="3d.html">3D</a><a href="renders.html">Renders</a><a href="package.html">Package</a></nav></div></div>
+  <div class="copy wrap">
+    <div class="eyebrow">AZAD · New Cairo · interior architecture</div>
+    <h1><b>AZAD</b> Apartment</h1>
+    <div class="rule" aria-hidden="true"></div>
+    <p>A 195 m² ground-floor apartment with a 90 m² garden, redesigned from its concrete shell: warm, minimal, built around an open kitchen and a garden facing south-south-east.</p>
+    <div class="cta"><a class="btn solid" href="renders.html">See the renders</a><a class="btn ghost" href="plan.html">See the plan</a></div>
+  </div>
+</header>
+
+<div class="factsband"><div class="wrap">
+  <div class="facts" aria-label="Key facts">
+    <div><span>Footprint</span><b>17.90 × 16.33 m</b></div>
+    <div><span>Garden</span><b>17.90 × 8.62 m, SSE</b></div>
+    <div><span>Rooms</span><b>3 bedrooms · office · 2 baths</b></div>
+    <div><span>Updated</span><b>28 Sep 2026</b></div>
+  </div>
+</div></div>
+<div class="wrap">
+  <main>
+    <section aria-labelledby="explore">
+      <div class="sh"><div class="eyebrow">The project</div><h2 id="explore">Explore</h2><p>Every view is drawn from the same centimetre model: read it, walk it, see it, and build it.</p></div>
+      <div class="cards">
+        <a class="card" href="plan.html"><div class="thumb"><img src="img/plan-thumb.jpg" alt="Floor plan" loading="lazy"></div><div class="body"><div class="n">01 · Plan</div><h3>Layout &amp; garden</h3><p>As built, Rev 3.1 and Rev 4 to scale, with every survey dimension.</p></div></a>
+        <a class="card" href="3d.html"><div class="thumb"><img src="img/3d-thumb.jpg" alt="3D model" loading="lazy"></div><div class="body"><div class="n">03 · 3D</div><h3>Walk it freely</h3><p>The live model: switch between As built, Rev 3.1 and Rev 4, open and close the doors, change the light.</p></div></a>
+        <a class="card" href="renders.html"><div class="thumb"><img src="img/renders-thumb.jpg" alt="Render" loading="lazy"></div><div class="body"><div class="n">04 · Renders</div><h3>Photoreal views</h3><p>Path-traced views of the main spaces, by day and by night.</p></div></a>
+        <a class="card" href="package.html"><div class="thumb"><img src="img/package-thumb.jpg" alt="Drawings" loading="lazy"></div><div class="body"><div class="n">05 · Package</div><h3>Drawings &amp; specs</h3><p>Your requirements, lighting, power and data, elevations, schedules.</p></div></a>
+      </div>
+    </section>
+
+    <section aria-labelledby="rooms">
+      <div class="sh"><div class="eyebrow">The spaces</div><h2 id="rooms">Room by room</h2><p>What each space does, and why it's drawn the way it is. The photoreal views are on the Renders page.</p></div>
+      <div class="rooms"><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-arrival.jpg" alt="Plan of arrival and dining" loading="lazy"></a></figure><div class="txt"><div class="dims">Reception + dining 3.79 × 8.70 m</div><h3>Arrival and dining</h3><p>You step straight into the dining area. The lobby on your left hides behind a flush door and takes the coats, shoes, keys and the electricity board, so nothing clutters the way in.</p><ul><li>Dining for 8 across the room, so the path to the garden stays clear</li><li>Your desk in the far-right corner, shelves above</li><li>The white Yamaha on the west wall, art above it</li><li>Warm LED coves at the ceiling edges</li></ul><div class="go"><a href="3d.html#entrance">3D →</a><a href="package.html#elev">Lobby elevation →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-kitchen.jpg" alt="Plan of the kitchen" loading="lazy"></a></figure><div class="txt"><div class="dims">Kitchen 3.90 × 3.35 m · island 2.10 × 0.95 m</div><h3>The kitchen</h3><p>Both kitchen walls come down, so the kitchen joins the living spaces. An L-shaped fluted-glass screen in oak frames slides out to close it when you cook something loud or messy.</p><ul><li>Tall bank: integrated fridge, oven and microwave at eye level, the larder right beside it</li><li>Travertine worktop and splashback, open oak shelves lit from below</li><li>Fluted-oak island with a travertine waterfall top and 4 stools</li><li>The washing up goes to the dirty kitchen in the utility room</li></ul><div class="go"><a href="3d.html#island">3D at the island →</a><a href="package.html#elev">Kitchen elevations →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-living.jpg" alt="Plan of family living" loading="lazy"></a></figure><div class="txt"><div class="dims">Family living 3.77 × 5.34 m</div><h3>Family living</h3><p>The everyday room sits in the garden bay, a step from the lawn. The oak panel wall from your video closes it off from the reception when the kids are up and guests are over.</p><ul><li>Oak slats on acoustic felt behind the TV: it backs onto the office</li><li>A deep corner sofa in ivory bouclé, sage and terracotta linen cushions</li><li>Round travertine table on a wool rug</li><li>3 m sliding doors to the terrace</li></ul><div class="go"><a href="3d.html#living">3D →</a><a href="package.html#elev">TV wall elevation →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-openplan.jpg" alt="Plan of reception" loading="lazy"></a></figure><div class="txt"><div class="dims">Reception + dining 3.79 × 8.70 m</div><h3>Reception</h3><p>The hosting room: two sofas facing across a travertine table, the garden door beside them, and the whole of the open plan in view. With the panels open, 20 to 30 guests move freely.</p><ul><li>Two sofas and two lounge chairs</li><li>Art above the west sofa and the piano</li><li>Garden door to the pergola terrace</li></ul><div class="go"><a href="3d.html#reception">3D →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-kids.jpg" alt="Plan of the kids' room" loading="lazy"></a></figure><div class="txt"><div class="dims">Kids' room 3.92 × 4.32 m</div><h3>The kids' room</h3><p>One room for both children for the next ten years: a toddler bed and a cot now, two beds and two desks later, and a timber deck outside the sliding door.</p><ul><li>Wardrobe wall along the corridor side</li><li>Changing unit now, a desk later</li><li>Soft sage accents, oak floor</li></ul><div class="go"><a href="3d.html#kids">3D →</a><a href="plan.html">Now vs later on the plan →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-master.jpg" alt="Plan of master bedroom" loading="lazy"></a></figure><div class="txt"><div class="dims">Master bedroom 3.85 × 4.96 m</div><h3>Master bedroom</h3><p>A calm room with its own door to a private gravel courtyard, the dressing room and bath behind.</p><ul><li>Upholstered bed between two oak bedside tables, lamps on switched sockets</li><li>A pair of dune prints above the bed</li><li>Bench at the foot of the bed</li></ul><div class="go"><a href="3d.html#master">3D →</a></div></div></article><article class="room"><figure class="shot"><a href="plan.html"><img src="img/room-garden.jpg" alt="Plan of the garden" loading="lazy"></a></figure><div class="txt"><div class="dims">Garden 17.90 × 8.62 m, facing south-south-east</div><h3>The garden</h3><p>The garden is designed for kids and for guests: a pergola terrace at floor level with an outdoor lounge, dining for 10 and an outdoor kitchen, a play lawn, and tall screen hedges against the blocks that overlook it.</p><ul><li>Aluminium louvred pergola, bronze</li><li>Outdoor kitchen: BBQ, sink, prep</li><li>Play lawn with a playhouse and decks outside the bedrooms</li><li>Planting still to design together</li></ul><div class="go"><a href="3d.html#garden">3D on the lawn →</a></div></div></article></div>
+    </section>
+
+    <section aria-labelledby="where" class="band">
+      <div class="sh"><div class="eyebrow">Working together</div><h2 id="where">The plan, step by step</h2><p>Seven steps from the concrete shell to moving in. We finish each one together before the next.</p></div>
+      <ol class="road">
+        <li><span class="no">1</span><div><h3>Brief and survey</h3><p>Your household, must-haves and style photos; the architect's as-built plan and the site video, read and redrawn in centimetres.</p></div><span class="chip done">Done</span></li>
+        <li class="cur"><span class="no">2</span><div><h3>Layout</h3><p>Where every room, wall, door and big piece of furniture goes. Two options to compare: Rev 3.1 (open kitchen with a glass screen) and Rev 4 (fully open plan, from the original drawing). Your walkthrough feedback closes it.</p></div><span class="chip now">Your feedback</span></li>
+        <li><span class="no">3</span><div><h3>Look and feel</h3><p>The style from your 19 photos and the panel-wall video: warm white, light oak, travertine, sage and brushed brass. Samples once you lean one way.</p></div><span class="chip">Started</span></li>
+        <li><span class="no">4</span><div><h3>Room by room</h3><p>Kitchen, bathrooms, joinery, lighting plan, flooring, ceilings, and the furniture layout with real dimensions.</p></div><span class="chip">Next</span></li>
+        <li><span class="no">5</span><div><h3>3D</h3><p>An interactive 3D model of the apartment that you can orbit and walk through in your browser, with materials applied, plus a few perspective images per room. The model is accurate and good enough to make decisions from. The final photoreal renders and the 360° tour come once the layout is final and your real furniture is chosen.</p></div><span class="chip">Started</span></li>
+        <li><span class="no">6</span><div><h3>Documentation</h3><p>Dimensioned plans, electrical and lighting points, finish schedules, and a shopping and specification list your contractor can quote from.</p></div><span class="chip">Draft ready</span></li>
+        <li><span class="no">7</span><div><h3>Finishing phases</h3><p>The works on site, in the order they have to happen, from the shell to furnishing and moving in. Every phase is listed below.</p></div><span class="chip">Planned</span></li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="phases">
+      <div class="sh"><div class="eyebrow">Step 7</div><h2 id="phases">Finishing phases, in order</h2><p>What happens on site, and why each phase comes before the next: messy, wet and hidden work first; finishes, joinery and furniture last.</p></div>
+      <ol class="phases">
+        <li class="gate"><b>Approvals and sign-offs</b><span>Compound approval for the works and the pergola; the structural engineer's sign-off to remove the kitchen walls; the final layout and a contractor quote from the specification list.</span><small>Before anything is touched</small></li>
+        <li><b>Site set-up, protection and demolition</b><span>Protect the entrance and the building lobby, then take down the kitchen walls and the maid's WC walls and clear the rubble.</span><small>First on site</small></li>
+        <li><b>New walls and openings</b><span>Block walls for the utility, nanny's room and lobby; niches for the TV wall and the key cabinet; lintels and frames for the hidden door and the sliders.</span><small>Before any pipe or cable goes in</small></li>
+        <li><b>First fix: services inside the walls and floor</b><span>Electrical conduits and boxes, data, camera and intercom cables to the lobby cabinet; water supply and drains (kitchen, utility, baths, garden); AC copper and condensate lines; the hood duct route.</span><small>Everything that disappears behind plaster</small></li>
+        <li><b>Plaster, screed and waterproofing</b><span>Wall plaster and corner beads; floor screed to level; waterproofing and flood tests in the bathrooms, the utility and the terrace.</span><small>Wet trades, done once</small></li>
+        <li><b>Garden hardscape</b><span>Levels and drainage, terrace base and paving, deck frames, pergola footings, the outdoor-kitchen base, irrigation sleeves and garden lighting cables. Heavy work now, so it never crosses finished floors.</span><small>Runs alongside the next phases</small></li>
+        <li><b>Ceilings and AC</b><span>Gypsum ceilings and bulkheads, the LED cove pockets and access hatches; hidden ducted AC units hung and tested before the ceilings close.</span><small>After first fix, before tiling</small></li>
+        <li><b>Tiling and stone</b><span>Bathroom walls and floors, the porcelain across the living areas, thresholds and window sills. Floors are protected as soon as they're laid.</span><small>Hard floors before paint</small></li>
+        <li><b>Doors, windows and glazing frames</b><span>Door frames and the flush hidden door; adjust and seal the aluminium sliders; the track for the fluted-glass screen and the oak panel wall.</span><small>Frames before the last coat of paint</small></li>
+        <li><b>Paint, first coats</b><span>Filler, primer and two coats everywhere; ceilings first, then walls.</span><small>Before wood floors and joinery</small></li>
+        <li><b>Engineered oak floors</b><span>Laid in the bedrooms and the office once the wet trades are dry, then covered and protected.</span><small>After paint, before joinery</small></li>
+        <li><b>Joinery and kitchen</b><span>Kitchen and island, wardrobes, the lobby and utility cabinets, the TV slat wall, the desk and shelves, the oak panel wall and the fluted-glass screen. Worktops are templated on site, then fitted.</span><small>The longest lead time: order early</small></li>
+        <li><b>Second fix: fittings and appliances</b><span>Switches and sockets, light fittings and LED strips, sanitaryware and taps, the appliances, the Wi-Fi access points, cameras and intercom, and the lighting scenes programmed.</span><small>Everything you touch</small></li>
+        <li><b>Final paint and touch-ups</b><span>The last coat, and touch-ups after the joiners and electricians have finished.</span><small>After all trades leave</small></li>
+        <li><b>Garden finishing and planting</b><span>Pergola and outdoor kitchen, the decks, the screen hedges and the planting we design together, then irrigation testing.</span><small>Plants go in last</small></li>
+        <li><b>Snagging and deep clean</b><span>A room-by-room check against the drawings, fixes, then a professional deep clean.</span><small>Before any furniture arrives</small></li>
+        <li><b>Furnishing</b><span>Curtain tracks and curtains, rugs, loose furniture, lamps, art and styling; the piano moved in.</span><small>Deliveries booked around the clean</small></li>
+        <li class="gate"><b>Move in</b><span>Keys, manuals and warranties handed over, and the lighting and Wi-Fi set up the way you like them.</span><small>Welcome home</small></li>
+      </ol>
+      <p class="pnote">Order your long-lead items early, while the site is still in its wet phases: kitchen and joinery (6–10 weeks), the fluted glass and panel wall, sanitaryware, the AC units and the engineered oak.</p>
+    </section>
+
+    <section aria-labelledby="palette">
+      <div class="sh"><div class="eyebrow">Materials</div><h2 id="palette">The palette</h2><p>Drawn from your 19 photos and the panel-wall video.</p></div>
+      <div class="palette">
+        <div class="sw"><i style="background:#EDE7DD"></i><b>Warm white</b>Limewash walls, ceilings</div>
+        <div class="sw"><i style="background:#D3B08A"></i><b>Light oak</b>Joinery, slats, panel wall</div>
+        <div class="sw"><i style="background:#DCCDB5"></i><b>Travertine</b>Worktops, island, tables</div>
+        <div class="sw"><i style="background:#E9E3D7"></i><b>Ivory bouclé</b>Sofas and chairs</div>
+        <div class="sw"><i style="background:#A5AE95"></i><b>Sage + terracotta</b>Linen cushions, accents</div>
+        <div class="sw"><i style="background:#C9A064"></i><b>Brushed brass</b>Pulls, taps, trims</div>
+      </div>
+    </section>
+  </main>
+</div>
+<footer><div class="wrap"><span>AZAD Apartment · interior architecture</span><span>Drawn from the as-built survey · verify on site</span><span>Not for construction</span></div></footer>
+
+</html>
