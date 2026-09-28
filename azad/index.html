@@ -91,6 +91,19 @@ section{display:grid;gap:30px}
 .band{background:var(--olive);box-shadow:0 0 0 100vmax var(--olive);clip-path:inset(-72px -100vmax);color:var(--on-olive)}
 .band .sh h2{color:var(--on-olive)}
 .band .sh p{color:var(--on-olive2)}
+.todo{border:1.5px solid var(--gold);padding:26px 28px 10px;margin:0 0 44px}
+.todo .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px 16px;flex-wrap:wrap}
+.todo h3{font:600 21px/1.3 var(--font);color:#fff;margin:0}
+.todo .top span{font:600 10.5px var(--font);letter-spacing:.22em;text-transform:uppercase;color:var(--on-olive2)}
+.todo>p{margin:6px 0 8px;color:var(--on-olive2);font-size:15px}
+.todo ul{list-style:none;margin:0;padding:0}
+.todo li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:4px 14px;padding:16px 0;border-top:1px solid rgba(255,255,255,.18)}
+.todo li::before{content:"";width:16px;height:16px;border:1.5px solid var(--gold);margin-top:4px}
+.todo b{font-weight:600;color:#fff}
+.todo li p{margin:2px 0 0;color:var(--on-olive2);font-size:15px;max-width:72ch}
+.todo a{color:#fff;border-bottom:1.5px solid var(--gold);text-decoration:none}
+.todo a:hover,.todo a:focus-visible{color:var(--gold)}
+@media (max-width:600px){.todo{padding:20px 18px 6px}}
 .road{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid rgba(255,255,255,.22)}
 .road li{display:grid;grid-template-columns:64px minmax(0,1fr) 150px;gap:6px 24px;padding:22px 0;border-bottom:1px solid rgba(255,255,255,.22);align-items:start}
 .road .no{font:300 38px/1 var(--font);color:var(--gold)}
@@ -238,6 +251,16 @@ dialog.lb::backdrop{background:rgba(12,12,12,.95)}
 
     <section id="working" role="tabpanel" aria-labelledby="tab-working" class="band" hidden>
       <div class="sh"><div class="eyebrow">Working together</div><h2 id="where">The plan, step by step</h2><p>Seven steps from the concrete shell to moving in. We finish each one together before the next.</p></div>
+      <div class="todo" aria-labelledby="todo-h">
+        <div class="top"><h3 id="todo-h">Waiting on you</h3><span>4 open</span></div>
+        <p>What I need from you to keep going. I'll tick each one off here when it's in.</p>
+        <ul>
+          <li><div><b>Choose Rev 3.1 or Rev 4</b><p>Open kitchen with a fluted-glass screen, or fully open plan. Compare them on the <a href="plan.html">plan</a> and <a href="3d.html">in 3D</a>. Once you choose, I update the design package and the room descriptions to match.</p></div></li>
+          <li><div><b>Send your reference photos</b><p>As many as you like. I sort and tag each one into the <a href="#materials" data-tab="materials">Materials</a> categories.</p></div></li>
+          <li><div><b>Choose the real furniture</b><p>The photoreal renders and the 360° tour stay on hold until you've picked it, so they show what you'll actually live with.</p></div></li>
+          <li><div><b>Ask the compound about the garden</b><p>What they allow for the pergola or motorised shades, and for the <a href="plan.html#garden">boundary</a>: the height, the fins and the wall. The boundary design depends on their answer.</p></div></li>
+        </ul>
+      </div>
       <ol class="road">
         <li><span class="no">1</span><div><h3>Brief and survey</h3><p>Your household, must-haves and style photos; the architect's as-built plan and the site video, read and redrawn in centimetres.</p></div><span class="chip done">Done</span></li>
         <li class="cur"><span class="no">2</span><div><h3>Layout</h3><p>Where every room, wall, door and big piece of furniture goes. Two options to compare: Rev 3.1 (open kitchen with a glass screen) and Rev 4 (fully open plan, from the original drawing). Your walkthrough feedback closes it.</p></div><span class="chip now">Your feedback</span></li>
