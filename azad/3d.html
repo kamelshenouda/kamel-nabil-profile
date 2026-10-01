@@ -112,7 +112,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .zoomui button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .status{position:absolute;left:calc(var(--pw) + 36px);bottom:12px;margin-right:170px;font:500 12px var(--mono);color:#1D2125;background:rgba(251,250,247,.88);padding:6px 10px;border-radius:4px;pointer-events:none;max-width:calc(100% - 24px)}
 .loading{position:absolute;inset:0;display:grid;place-items:center;font:500 13px var(--mono);color:var(--muted)}
-/* what is this? card, mini-plan, tour */
+/* what is this? card, mini-plan */
 .pcard{position:absolute;z-index:4;width:max-content;min-width:170px;max-width:min(290px,calc(100% - 24px));box-sizing:border-box;background:rgba(251,250,247,.95);color:#1D2125;border-radius:8px;
   box-shadow:0 6px 24px rgba(0,0,0,.18);padding:9px 30px 10px 12px;font:500 12px/1.45 var(--mono);pointer-events:auto;font-variant-numeric:tabular-nums}
 .pcard b{display:block;font:600 14px/1.25 var(--display);margin-bottom:3px}
@@ -144,9 +144,6 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .ftools{display:flex;flex-wrap:wrap;gap:6px}
 .ftools button{appearance:none;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);font:600 12px var(--display);padding:6px 9px;border-radius:6px;cursor:pointer}
 .ftools button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.tourbtn{appearance:none;border:1px solid var(--accent);background:transparent;color:var(--accent);font:600 13px var(--display);padding:8px 10px;border-radius:6px;cursor:pointer;text-align:left}
-.tourbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
-.tourbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (max-width:760px){
   .app{display:grid;grid-template-columns:1fr;grid-template-rows:58% 42%}
   .stage{position:relative;grid-row:1}
@@ -167,22 +164,94 @@ h3{font-weight:600}
 .loading{flex-direction:column;gap:10px}
 .loading .lbar{width:180px;height:3px;border-radius:2px;background:rgba(0,0,0,.08);overflow:hidden}
 .loading .lbar b{display:block;height:100%;width:8%;background:var(--accent);transition:width .25s}
+
+/* panel, second design (1 Oct 2026): plan picker on top, five tabs, one control per row with its shortcut */
+:root{--track:rgba(29,33,37,.07)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--track:rgba(255,255,255,.08)}}
+:root[data-theme="dark"]{--track:rgba(255,255,255,.08)}
+.panel{gap:0!important;padding:0!important;display:flex!important;flex-direction:column;overflow:hidden!important}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px 10px}
+.phead .ptitle{font:500 19px/1.15 var(--display);letter-spacing:-.01em;margin-top:3px}
+.iconbtn{appearance:none;width:32px;height:32px;border-radius:9px;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);cursor:pointer;flex:none;display:grid;place-items:center;margin-right:18px;font:500 18px/1 var(--display)}
+.iconbtn svg{width:19px;height:19px}
+.iconbtn:focus-visible,.plans button:focus-visible,.tabs button:focus-visible,.rooms button:focus-visible,.ctl .bt button:focus-visible,#season button:focus-visible,.sel:focus-visible,.wbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 12px 12px}
+.plans button{appearance:none;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);border-radius:9px;padding:7px 3px 6px;cursor:pointer;text-align:center;font:600 12px/1.15 var(--display);min-width:0}
+.panel > .sitenav{padding:12px 50px 0 16px;font-size:11px!important;gap:4px 12px!important}
+.panel > .sitenav span{gap:12px!important}
+.panel > .sitenav + .phead{padding-top:10px}
+.plans button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px!important;letter-spacing:-.01em;padding-left:1px!important;padding-right:1px!important}
+.plans{gap:3px!important;padding:0 10px 12px!important}
+.plans button small{display:block;font:500 10px/1.2 var(--mono);color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plans button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.plans button[aria-pressed="true"] small{color:inherit;opacity:.85}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:0 4px;flex:none}
+.tabs button{appearance:none;border:0;background:none;color:var(--muted);font:600 11.5px var(--display);padding:8px 2px 7px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;display:grid;justify-items:center;gap:3px;min-width:0}
+.tabs button svg{width:18px;height:18px}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabp{overflow-y:auto;padding:14px 16px 22px;display:grid;gap:16px;align-content:start;flex:1;min-height:0}
+.tabp h3{margin:4px 0 -6px;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tabp .hint{margin:-6px 0 0}
+.ctl{display:grid;gap:7px}
+.cl{display:flex;justify-content:space-between;align-items:center;gap:8px;font:600 12.5px var(--display);color:var(--ink)}
+.sk{font:600 10.5px/1.5 var(--mono);color:var(--muted);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--paper);white-space:nowrap}
+.sk:empty{display:none}
+.ctl .bt,#season{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;background:var(--track);border-radius:10px;padding:3px}
+.ctl .bt button,#season button{appearance:none;border:0!important;background:transparent!important;color:var(--ink2);font:600 12.5px/1.2 var(--display);padding:7px 4px;border-radius:8px;cursor:pointer;text-align:center;min-width:0}
+.ctl .bt button[aria-pressed="true"],#season button[aria-pressed="true"]{background:var(--sheet)!important;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.rooms{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.rooms button{appearance:none;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);font:600 13px var(--display);padding:9px 10px;border-radius:9px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:6px;min-width:0}
+.rooms button.wide{grid-column:1/-1}
+.rooms button:hover{border-color:var(--accent)}
+.rooms button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.rooms button[aria-pressed="true"] .sk{background:transparent;color:inherit;border-color:rgba(255,255,255,.4)}
+.timebox{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+.timebox input{width:100%;accent-color:var(--accent);margin:0}
+.timebox output{font:600 15px var(--mono);min-width:48px;text-align:right}
+.sel{width:100%;font:600 13px var(--display);padding:8px 10px;border:1px solid var(--btn-line);border-radius:9px;background:var(--btn);color:var(--ink)}
+.wbtn{appearance:none;display:flex;justify-content:space-between;align-items:center;width:100%;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);font:600 13px var(--display);padding:10px 12px;border-radius:9px;cursor:pointer}
+.wbtn kbd{font:600 11px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--paper)}
+.panel .vrbtn{width:100%}
+.panel .help{border-top:1px solid var(--line);padding-top:12px}
+/* keyboard guide, and the note each shortcut shows */
+.kguide{position:absolute;inset:0;z-index:30;display:grid;place-items:center;background:rgba(20,22,24,.38);padding:16px}
+.kbox{background:var(--sheet);color:var(--ink);border-radius:16px;box-shadow:0 24px 70px rgba(0,0,0,.32);width:min(780px,100%);max-height:100%;overflow:auto;padding:20px 22px 22px;box-sizing:border-box}
+.kbox header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.kbox h2{margin:0;font:500 22px var(--display)}
+.kbox p{margin:0 0 10px;color:var(--ink2);font-size:13px;max-width:62ch}
+.kcols{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}
+.kcols h3{grid-column:1/-1;margin:14px 0 2px;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.krow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.krow small{display:block;color:var(--muted);font-size:11.5px}
+.krow .keys{display:flex;gap:4px;flex:none}
+.kbox kbd{font:600 12px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:var(--paper);color:var(--ink);white-space:nowrap}
+.toast{position:absolute;left:50%;top:58px;transform:translateX(-50%);z-index:9;background:rgba(29,33,37,.9);color:#fff;padding:8px 14px;border-radius:9px;font:600 13px var(--display);pointer-events:none;opacity:0;transition:opacity .18s;white-space:nowrap}
+.toast.on{opacity:1}
+.toast kbd{font:600 11px var(--mono);border:1px solid rgba(255,255,255,.35);border-radius:4px;padding:0 5px;margin-right:8px}
+@media (max-width:760px){ .panel{padding:0!important} .kcols{grid-template-columns:1fr} .iconbtn{margin-right:0} .tabp{padding-bottom:30px} }
 </style>
 
 <div class="app">
   <aside class="panel" aria-label="Controls">
   <nav class="sitenav" aria-label="Site"><a class="home" href="index.html">← AZAD Apartment</a><span><a href="plan.html">Plan</a><a href="3d.html" aria-current="page">3D</a><a href="renders.html">Renders</a><a href="package.html">Package</a></span></nav>
-    <div>
-      <div class="eyebrow">AZAD Apartment · <span id="layoutname">Rev 4 · Open plan</span></div>
-      <h1>3D walkthrough</h1>
+    <header class="phead">
+      <div><div class="eyebrow">AZAD Apartment · 3D</div><div class="ptitle" id="layoutname">As built</div></div>
+      <button type="button" class="iconbtn" id="keysbtn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="5" width="16" height="10.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 8.4h1.2M8.4 8.4h1.2M11.8 8.4H13M15 8.4h.1M5 12.2h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </header>
+    <div class="plans" id="layout" role="group" aria-label="Plan">
+      <button type="button" data-v="existing" aria-pressed="false" title="The shell as the architect handed it over">As built<small>today</small></button><button type="button" data-v="p1" aria-pressed="false" title="Andrew's Proposal 1 (28 Sep), with the kitchen, dining, utility and foyer fitted out">Proposal 1<small>Andrew</small></button><button type="button" data-v="c" aria-pressed="false" title="Rev 3.1: open kitchen with a fluted-glass screen">Rev 3.1<small>open kitchen</small></button><button type="button" data-v="d" aria-pressed="false" title="Rev 4: fully open plan">Rev 4<small>open plan</small></button>
     </div>
-    <p class="note">Built from the same measurements as the plan; materials are placeholders in your palette.</p>
-    <div class="grp">
-      <h2>Stand here</h2>
-      <div class="views" id="views">
-        <button type="button" class="wide" data-view="overview" aria-pressed="true">Overview</button>
+    <nav class="tabs" role="tablist" aria-label="Controls"><button type="button" role="tab" data-tab="go" aria-selected="false" aria-controls="tab-go" id="tb-go"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5c-3 0-5.2 2.3-5.2 5.1 0 3.8 5.2 9.9 5.2 9.9s5.2-6.1 5.2-9.9c0-2.8-2.2-5.1-5.2-5.1z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="7.7" r="1.9" fill="currentColor"/></svg><span>Go</span></button><button type="button" role="tab" data-tab="view" aria-selected="false" aria-controls="tab-view" id="tb-view"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.8 17 6.6 10 10.4 3 6.6z M3 10.2l7 3.8 7-3.8 M3 13.6l7 3.8 7-3.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>View</span></button><button type="button" role="tab" data-tab="light" aria-selected="false" aria-controls="tab-light" id="tb-light"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 1.8v2.4M10 15.8v2.4M1.8 10h2.4M15.8 10h2.4M4.2 4.2l1.7 1.7M14.1 14.1l1.7 1.7M4.2 15.8l1.7-1.7M14.1 5.9l1.7-1.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Light</span></button><button type="button" role="tab" data-tab="furnish" aria-selected="false" aria-controls="tab-furnish" id="tb-furnish"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 9.5V7.2c0-1.3 1-2.2 2.2-2.2h8.6c1.2 0 2.2.9 2.2 2.2v2.3M2.5 9.5h15v4.3h-15zM4.2 13.8v2.2M15.8 13.8v2.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Furnish</span></button><button type="button" role="tab" data-tab="more" aria-selected="false" aria-controls="tab-more" id="tb-more"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4.5" cy="10" r="1.6" fill="currentColor"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/><circle cx="15.5" cy="10" r="1.6" fill="currentColor"/></svg><span>More</span></button></nav>
+
+    <section class="tabp" id="tab-go" role="tabpanel" aria-labelledby="tb-go">
+      <div class="rooms" id="views">
+        <button type="button" class="wide" data-view="overview" aria-pressed="true"><span>Overview</span><kbd class="sk" data-k="0"></kbd></button>
         <button type="button" data-view="entrance">Main door</button>
+        <button type="button" data-only="p1" data-view="foyer">Foyer</button>
         <button type="button" data-only="c d" data-view="island">Island</button>
+        <button type="button" data-only="p1" data-view="kitchen">Kitchen</button>
+        <button type="button" data-only="p1" data-view="aisle">Kitchen aisle</button>
         <button type="button" data-view="living">Living</button>
         <button type="button" data-view="reception">Reception</button>
         <button type="button" data-only="existing c d" data-view="dining">Dining</button><button type="button" data-only="p1" data-view="dinep1">Dining</button>
@@ -190,109 +259,90 @@ h3{font-weight:600}
         <button type="button" data-view="kids">Kids' room</button>
         <button type="button" data-view="office">Office</button>
         <button type="button" data-view="master">Master</button>
+        <button type="button" data-only="p1" data-view="utility">Utility</button>
         <button type="button" data-view="garden">Lawn</button>
         <button type="button" data-view="terrace">Terrace</button>
-        <button type="button" data-only="p1" data-view="kitchen">Kitchen</button>
-        <button type="button" data-only="p1" data-view="aisle">Kitchen aisle</button>
-        <button type="button" data-only="p1" data-view="utility">Utility</button>
-        <button type="button" data-only="p1" data-view="foyer">Foyer</button>
       </div>
-      <button type="button" class="tourbtn" id="tourbtn" aria-pressed="false">▶ Play the tour</button>
-      <p class="hint">Click anything to see what it is and its real size. Standing, the plan top right shows where you are: click it to walk there.</p>
+      <p class="hint">Click anything in the model for its name and real size. Standing, double-click the floor or the small plan to walk there.</p>
       <button type="button" class="vrbtn" id="vrbtn" hidden>Enter VR · walk at true scale</button>
-      <p class="hint" id="vrhint">VR: open this page in a headset's browser (such as a Meta Quest) and an Enter VR button appears here.</p>
-      <div class="seg" id="wallrow"><span>Height</span><div class="bt" data-state="cut"><button type="button" data-v="full" aria-pressed="true" title="Real height: 2.80 m to the slab">2.80 m</button><button type="button" data-v="cut" aria-pressed="false" title="Cut at 1.25 m to see into the rooms">Cut</button></div></div>
-    </div>
-    <div class="grp">
-      <h2>Show</h2>
-      <div class="seg lay"><span>Model</span><div class="bt" id="layout"><button type="button" data-v="existing" aria-pressed="false" title="The shell as the architect handed it over">As built</button><button type="button" data-v="p1" aria-pressed="false" title="Andrew's Proposal 1 (28 Sep), with the kitchen, dining, utility and foyer fitted out">Proposal 1</button><button type="button" data-v="c" aria-pressed="false" title="Rev 3.1: open kitchen with a fluted-glass screen">Open kitchen</button><button type="button" data-v="d" aria-pressed="false" title="Rev 4: fully open plan">Open plan</button></div></div>
-      <div class="seg"><span>Furniture</span><div class="bt" data-state="fu"><button type="button" data-v="all" aria-pressed="true" title="Furniture, built-ins and the garden furniture">All</button><button type="button" data-v="built" aria-pressed="false" title="Kitchen, wardrobes, bathrooms and joinery only">Built-in</button><button type="button" data-v="none" aria-pressed="false" title="Empty rooms">None</button></div></div>
-      <div class="seg"><span>Walls</span><div class="bt" data-state="wm"><button type="button" data-v="auto" aria-pressed="true" title="Washed glass from above; calm, solid walls when you stand in a room">Auto</button><button type="button" data-v="glass" aria-pressed="false" title="Washed, frosted glass walls everywhere: you sense the rooms beyond">Glass</button><button type="button" data-v="solid" aria-pressed="false" title="Painted plaster walls, as built">Solid</button></div></div>
-      <div class="seg"><span>Look</span><div class="bt" data-state="look"><button type="button" data-v="natural" aria-pressed="true" title="Your finishes: oak, porcelain, stone, fabrics">Finishes</button><button type="button" data-v="model" aria-pressed="false" title="A clean white architectural model with the oak kept">Model</button></div></div>
-      <div class="seg"><span>Dimensions</span><div class="bt" data-state="dim"><button type="button" data-v="off" aria-pressed="true">Off</button><button type="button" data-v="on" aria-pressed="false" title="Room widths and lengths in metres, from the survey">On</button></div></div>
+    </section>
+
+    <section class="tabp" id="tab-view" role="tabpanel" aria-labelledby="tb-view" hidden>
+      <div class="ctl"><div class="cl"><span>Furniture</span><kbd class="sk" data-k="2"></kbd></div><div class="bt" data-state="fu"><button type="button" data-v="all" aria-pressed="true" title="Furniture, built-ins and the garden furniture">All</button><button type="button" data-v="built" aria-pressed="false" title="Kitchen, wardrobes, bathrooms and joinery only">Built-in</button><button type="button" data-v="none" aria-pressed="false" title="Empty rooms">None</button></div></div>
       <p class="hint" id="hint"></p>
-    </div>
-    <details class="sec" id="sec-furnish">
-      <summary><span>Furnish</span><em id="sum-furnish">Place real-size pieces and check the walkways</em></summary>
-      <div class="grp">
-        <div class="ftools"><button type="button" id="fmode" aria-pressed="false">Start furnishing</button><button type="button" id="fcopy">Copy list</button><button type="button" id="fclear">Clear all</button></div>
-        <p class="hint" id="fhint">Pick a piece and it lands in the middle of your view. Drag it to move (5 cm steps), R to turn 90° (Shift+R 15°), Delete to remove. Gaps under 75 cm to walls and furniture are flagged. Each plan keeps its own layout; Copy list gives the positions to draw into the plan.</p>
-        <div class="fcat" id="fcat"></div>
-      </div>
-    </details>
-    <details class="sec" id="sec-fin">
-      <summary><span>Finishes &amp; doors</span><em id="sum-fin"></em></summary>
-      <div class="grp">
-      <div class="seg"><span>Floors</span><div class="bt" data-state="fl"><button type="button" data-v="stone" aria-pressed="true" title="Large porcelain in the living areas, oak in the bedrooms">Porcelain</button><button type="button" data-v="wood" aria-pressed="false" title="Oak wood flooring in every room except the bathrooms, WCs and utility">Wood</button></div></div>
-      <div class="seg"><span>Doors</span><div class="bt" data-state="d"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="closed" aria-pressed="false">Closed</button><button type="button" data-v="none" aria-pressed="false" title="No door leaves, just the openings">None</button></div></div>
-      <div class="seg" data-only="c"><span>Kitchen glass</span><div class="bt" data-state="k"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="closed" aria-pressed="false">Closed</button></div></div>
-      <div class="seg" data-only="c"><span>Living panels</span><div class="bt" data-state="p"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="closed" aria-pressed="false">Closed</button></div></div>
-      <div class="seg" data-only="c"><span>Kids' room</span><div class="bt" data-state="v"><button type="button" data-v="now" aria-pressed="true">Now</button><button type="button" data-v="later" aria-pressed="false">Later</button></div></div>
-      </div>
-    </details>
-    <details class="sec" id="sec-sun">
-      <summary><span>Sun &amp; shade</span><em id="sum-sun"></em></summary>
-      <div class="grp">
-      <div class="seg"><span>Sun</span><div class="bt" id="season"><button type="button" data-v="jun" aria-pressed="false" title="21 June, the longest day">21 Jun</button><button type="button" data-v="mar" aria-pressed="true" title="21 March; 23 September is the same an hour later on the clock">21 Mar</button><button type="button" data-v="dec" aria-pressed="false" title="21 December, the shortest day">21 Dec</button></div></div>
-      <div class="sunrow"><button type="button" id="sunplay" aria-label="Play the day" title="Play the day">▶</button><input type="range" id="suntime" min="5" max="20.5" step="0.25" value="12" aria-label="Time of day"><output id="sunclock" for="suntime">12:00</output></div>
-      <p class="sunnote" id="sunnote"></p>
-      <div class="seg"><span>Lights</span><select id="lxscene" aria-label="Lighting scene">
-        <option value="evening">Evening, all on</option><option value="cooking">Cooking</option><option value="dinner">Dinner / hosting</option>
-        <option value="film">Film</option><option value="night">Night path</option><option value="off">All off</option></select></div>
-      <div class="seg"><span>Garden shade</span><div class="bt" data-state="gs"><button type="button" data-v="pergola" aria-pressed="true">Pergola</button><button type="button" data-v="awning" aria-pressed="false" title="Two motorised shades: A over the living and reception terrace, B over the bedrooms">Motorised</button><button type="button" data-v="none" aria-pressed="false">None</button></div></div>
-      <div class="seg" id="awrow"><span>Shades A + B</span><div class="bt" data-state="aw"><button type="button" data-v="out" aria-pressed="true">Out</button><button type="button" data-v="in" aria-pressed="false">In</button></div></div>
-      <div class="seg"><span>Shutters</span><div class="bt" data-state="sh"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="half" aria-pressed="false">Half</button><button type="button" data-v="closed" aria-pressed="false">Closed</button></div></div>
-      <div class="seg"><span>Neighbours</span><div class="bt" data-state="up"><button type="button" data-v="on" aria-pressed="true" title="The five floors above, the rest of your block and building 10 across the garden cast their shade. You see the neighbours when you walk; from above they are hidden.">On</button><button type="button" data-v="off" aria-pressed="false">None</button></div></div>
-      </div>
-    </details>
-    <details class="sec" id="sec-true">
-      <summary><span>True size</span><em id="sum-true"></em></summary>
-      <div class="grp">
-      <p class="hint">Standing in a room at 100%, everything is drawn at the size it would look from where you sit. But a screen is a narrow slice of what your eyes take in, so the floor near your feet and the side walls are out of frame and rooms can read shorter than they are: tilt down, turn with A and D, or zoom out to take in the room, and check the distance readout top right. Set your screen and how far your eyes are from it (most people sit 50–60 cm from a laptop).</p>
-      <div class="seg"><span>Screen</span><select id="tsScreen" aria-label="Your screen">
-        <option value="0">Not set</option><option value="13.3">13" laptop</option><option value="14.2">14" laptop</option><option value="15.3">15" laptop</option><option value="16.2">16" laptop</option>
-        <option value="21.5">21.5" monitor</option><option value="24">24" monitor</option><option value="27">27" monitor</option><option value="32">32" monitor</option></select></div>
-      <div class="sunrow"><span class="tsl">You sit</span><input type="range" id="tsDist" min="30" max="120" step="5" value="55" aria-label="Distance from your eyes to the screen, cm"><output id="tsOut" for="tsDist">55 cm</output></div>
-      <p class="hint" id="tsNote"></p>
-      </div>
-    </details>
-    <details class="sec">
-      <summary><span>Keys &amp; mouse</span><em>arrows · A D · ⌃W ⌃S</em></summary>
+      <div class="ctl"><div class="cl"><span>Walls</span><kbd class="sk" data-k="3"></kbd></div><div class="bt" data-state="wm"><button type="button" data-v="auto" aria-pressed="true" title="Washed glass from above; solid walls when you stand in a room">Auto</button><button type="button" data-v="glass" aria-pressed="false" title="Washed, frosted glass walls everywhere">Glass</button><button type="button" data-v="solid" aria-pressed="false" title="Painted plaster walls, as built">Solid</button></div></div>
+      <div class="ctl"><div class="cl"><span>Doors</span><kbd class="sk" data-k="4"></kbd></div><div class="bt" data-state="d"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="closed" aria-pressed="false">Closed</button><button type="button" data-v="none" aria-pressed="false" title="No door leaves, just the openings">None</button></div></div>
+      <div class="ctl"><div class="cl"><span>Look</span><kbd class="sk" data-k="5"></kbd></div><div class="bt" data-state="look"><button type="button" data-v="natural" aria-pressed="true" title="Your finishes: oak, porcelain, stone, fabrics">Finishes</button><button type="button" data-v="model" aria-pressed="false" title="A clean white architectural model with the oak kept">White model</button></div></div>
+      <div class="ctl"><div class="cl"><span>Floors</span></div><div class="bt" data-state="fl"><button type="button" data-v="stone" aria-pressed="true" title="Large porcelain in the living areas, oak in the bedrooms">Porcelain</button><button type="button" data-v="wood" aria-pressed="false" title="Oak wood flooring in every room except the bathrooms, WCs and utility">Oak</button></div></div>
+      <div class="ctl"><div class="cl"><span>Dimensions</span><kbd class="sk" data-k="8"></kbd></div><div class="bt" data-state="dim"><button type="button" data-v="off" aria-pressed="true">Off</button><button type="button" data-v="on" aria-pressed="false" title="Room widths and lengths in metres, from the survey">On</button></div></div>
+      <div class="ctl" id="wallrow"><div class="cl"><span>Height from above</span><kbd class="sk" data-k="9"></kbd></div><div class="bt" data-state="cut"><button type="button" data-v="full" aria-pressed="true" title="Real height: 2.80 m to the slab">2.80 m</button><button type="button" data-v="cut" aria-pressed="false" title="Cut at 1.25 m to see into the rooms">Cut at 1.25 m</button></div></div>
+      <h3 data-only="c">Rev 3.1 options</h3>
+      <div class="ctl" data-only="c"><div class="cl"><span>Kitchen glass</span></div><div class="bt" data-state="k"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="closed" aria-pressed="false">Closed</button></div></div>
+      <div class="ctl" data-only="c"><div class="cl"><span>Living panels</span></div><div class="bt" data-state="p"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="closed" aria-pressed="false">Closed</button></div></div>
+      <div class="ctl" data-only="c"><div class="cl"><span>Kids' room</span></div><div class="bt" data-state="v"><button type="button" data-v="now" aria-pressed="true">Now</button><button type="button" data-v="later" aria-pressed="false">Later</button></div></div>
+      <span id="sum-fin" hidden></span>
+    </section>
+
+    <section class="tabp" id="tab-light" role="tabpanel" aria-labelledby="tb-light" hidden>
+      <p class="hint" id="sum-sun"></p>
+      <div class="ctl"><div class="cl"><span>Time of day</span><kbd class="sk" data-k="6"></kbd></div>
+        <div class="timebox"><button type="button" id="sunplay" aria-label="Play the day" title="Play the day">▶</button><input type="range" id="suntime" min="5" max="20.5" step="0.25" value="12" aria-label="Time of day"><output id="sunclock" for="suntime">12:00</output></div>
+        <div class="bt" id="season"><button type="button" data-v="jun" aria-pressed="false" title="21 June, the longest day">21 Jun</button><button type="button" data-v="mar" aria-pressed="true" title="21 March; 23 September is the same an hour later on the clock">21 Mar</button><button type="button" data-v="dec" aria-pressed="false" title="21 December, the shortest day">21 Dec</button></div>
+        <p class="sunnote" id="sunnote"></p></div>
+      <div class="ctl"><div class="cl"><span>Lighting scene</span><kbd class="sk" data-k="7"></kbd></div>
+        <select id="lxscene" class="sel" aria-label="Lighting scene"><option value="evening">Evening, all on</option><option value="cooking">Cooking</option><option value="dinner">Dinner / hosting</option><option value="film">Film</option><option value="night">Night path</option><option value="off">All off</option></select></div>
+      <div class="ctl"><div class="cl"><span>Garden shade</span></div><div class="bt" data-state="gs"><button type="button" data-v="pergola" aria-pressed="true">Pergola</button><button type="button" data-v="awning" aria-pressed="false" title="Two motorised shades: A over the living and reception terrace, B over the bedrooms">Motorised</button><button type="button" data-v="none" aria-pressed="false">None</button></div></div>
+      <div class="ctl" id="awrow"><div class="cl"><span>Shades A + B</span></div><div class="bt" data-state="aw"><button type="button" data-v="out" aria-pressed="true">Out</button><button type="button" data-v="in" aria-pressed="false">In</button></div></div>
+      <div class="ctl"><div class="cl"><span>Shutters</span></div><div class="bt" data-state="sh"><button type="button" data-v="open" aria-pressed="true">Open</button><button type="button" data-v="half" aria-pressed="false">Half</button><button type="button" data-v="closed" aria-pressed="false">Closed</button></div></div>
+      <div class="ctl"><div class="cl"><span>Neighbours</span></div><div class="bt" data-state="up"><button type="button" data-v="on" aria-pressed="true" title="The five floors above, the rest of your block and building 10 across the garden cast their shade">Shade on</button><button type="button" data-v="off" aria-pressed="false">None</button></div></div>
+    </section>
+
+    <section class="tabp" id="tab-furnish" role="tabpanel" aria-labelledby="tb-furnish" hidden>
+      <div class="ftools"><button type="button" id="fmode" aria-pressed="false">Start furnishing</button><button type="button" id="fcopy">Copy list</button><button type="button" id="fclear">Clear all</button></div>
+      <p class="hint" id="sum-furnish">Place real-size pieces and check the walkways</p>
+      <p class="hint" id="fhint">Pick a piece and it lands on a clear spot near the middle of your view. Drag to move (5 cm steps), <kbd>R</kbd> turns it 90° (<kbd>Shift</kbd>+<kbd>R</kbd> 15°), <kbd>Delete</kbd> removes it. Gaps under 75 cm are flagged. Each plan keeps its own layout.</p>
+      <div class="fcat" id="fcat"></div>
+    </section>
+
+    <section class="tabp" id="tab-more" role="tabpanel" aria-labelledby="tb-more" hidden>
+      <button type="button" class="wbtn" id="keysbtn2"><span>Keyboard shortcuts</span><kbd>?</kbd></button>
+      <div class="ctl"><div class="cl"><span>True size</span></div>
+        <p class="hint" id="sum-true"></p>
+        <p class="hint">At 100%, standing, things look their real size from where you sit. Set your screen and how far your eyes are from it (most people sit 50–60 cm from a laptop).</p>
+        <select id="tsScreen" class="sel" aria-label="Your screen"><option value="0">Screen not set</option><option value="13.3">13" laptop</option><option value="14.2">14" laptop</option><option value="15.3">15" laptop</option><option value="16.2">16" laptop</option><option value="21.5">21.5" monitor</option><option value="24">24" monitor</option><option value="27">27" monitor</option><option value="32">32" monitor</option></select>
+        <div class="timebox"><span class="tsl">You sit</span><input type="range" id="tsDist" min="30" max="120" step="5" value="55" aria-label="Distance from your eyes to the screen, cm"><output id="tsOut" for="tsDist">55 cm</output></div>
+        <p class="hint" id="tsNote"></p></div>
       <div class="help">
-      <b>Keyboard:</b> arrow keys move forward, back, left and right · <kbd>A</kbd> <kbd>D</kbd> look left and right · <kbd>⌃W</kbd> <kbd>⌃S</kbd> zoom in and out (hold to keep zooming) · <kbd>⌃D</kbd> doors open, closed, none · <kbd>⌃A</kbd> show or hide these controls (⌃ is the Control key). Drag to tilt up or down.<br>
-      <b>Zoom:</b> the + and − buttons on the model, the mouse wheel, pinch, or ⌃W / ⌃S. (On Windows, Ctrl+W closes the tab, so use + or the wheel there.) 1:1 goes back to true size; ⤢ shows the whole apartment. <b>At the door · 1:1</b> (or <kbd>H</kbd>) always takes you back to standing at the main door at true size.<br>
-      <b>Controls:</b> drag the edge of this panel to resize it (double-click the edge to reset); ‹ hides it.<br>
-      <b>Overview:</b> drag to orbit, right-drag to pan.<br>
-      <b>Dimensions:</b> room widths and lengths in metres, inside the walls: on the room labels from above, on the floor lines when standing.<br>
-      <b>Top right:</b> standing, the zoom (100% is true size: things look their real size and distance; below 100% you see more of the room, but it looks bigger than it is); from above, how far away you are. Then the compass direction you face; the red needle points north.<br>
-      <b>VR headset:</b> Enter VR puts you in the room at true scale; your own head height sets the eye level. Point a controller at the floor and pull the trigger to move there; push a thumbstick left or right to turn, forward or back to walk.<br>
-      <b>What is it?</b> Click or tap any piece for its name, real size and finish, outlined in the model; click a floor for the room's size. Esc or × closes it.<br>
-      <b>Tape measure:</b> the ruler button (or <kbd>M</kbd>), then click two points on any surface: floor, wall, worktop. The distance shows in metres, with the level and height parts when they differ. Esc clears.<br>
-      <b>Furnish:</b> place real-size pieces from the catalogue, drag them into place, R turns them; each piece shows its gap to the walls and furniture on every side, with walkways under 75 cm flagged. Saved per plan; Copy list hands the positions over.<br>
-      <b>Plan:</b> standing, the small plan top right shows where you are and which way you face; click it to walk there.<br>
-      <b>Tour:</b> Play the tour glides through every view of this layout and stops on any click or key.<br>
-      <b>Standing:</b> drag to look around; zooming out widens the view. Double-click (or double-tap) the floor to walk there. Walking with the arrows, walls, glass and closed doors stop you and you slide along them.<br>
-      <b>Walls:</b> Auto shows washed glass from above and solid walls when you stand in a room; Glass keeps the soft, light-filled blur everywhere; Solid shows painted walls as they will be built. <b>Look:</b> Finishes shows your materials; Model shows a clean white architectural model with the oak kept.<br>
-      <b>Lights</b> (Sun &amp; shade): the lighting plan's coves, downlights, wall washers, lamps and garden lights, with the package's scenes. Picking a scene in daylight moves the clock to 20:30.<br>
-      <b>Quality:</b> while you move, the view draws fast; the moment you stop it redraws at full quality with soft contact shading.
-          </div>
-    </details>
+        <b>Mouse and touch.</b> From above, drag to orbit, right-drag to pan, scroll to zoom. Standing, drag to look around, double-click the floor to walk there, scroll to widen or narrow the view.<br>
+        <b>What is it?</b> Click any piece for its name, real size and finish; click a floor for the room's size.<br>
+        <b>Tape measure:</b> the ruler button by the zoom, then two clicks.<br>
+        <b>Top right:</b> the room you are in, the zoom (100% is true size), the direction you face and the distance ahead; below it, the plan with your position.<br>
+        <b>VR:</b> open this page in a headset's browser (such as a Meta Quest) and an Enter VR button appears on the Go tab.
+      </div>
+      <p class="hint" id="vrhint" hidden></p>
+    </section>
   </aside>
   <div class="grip" id="grip" role="separator" aria-orientation="vertical" aria-label="Resize the controls" tabindex="0" title="Drag to resize · double-click to reset"></div>
-  <button type="button" class="ptoggle" id="ptoggle" aria-label="Hide the controls" title="Hide the controls (⌃A)">‹</button>
+  <button type="button" class="ptoggle" id="ptoggle" aria-label="Hide the controls" title="Hide the controls">‹</button>
+  <div class="kguide" id="kguide" hidden role="dialog" aria-modal="true" aria-labelledby="kgtitle"><div class="kbox">
+    <header><h2 id="kgtitle">Keyboard shortcuts</h2><button type="button" class="iconbtn" id="kgclose" aria-label="Close" style="margin:0">×</button></header>
+    <p id="kgintro"></p>
+    <div class="kcols" id="kcols"></div>
+  </div></div>
   <div class="stage" id="stage">
     <div class="loading" id="loading"><span id="loadmsg">Loading the 3D model…</span><span class="lbar"><b id="loadbar"></b></span></div>
     <div class="status" id="status" hidden></div>
     <div class="hud" id="hud" aria-live="off"><svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="11" class="hc"/><g id="hudn"><path d="M0 -9 L3.2 1 L0 -1 L-3.2 1 Z" class="hn"/><path d="M0 9 L3.2 -1 L0 1 L-3.2 -1 Z" class="hs"/></g></svg><span id="hudroom" hidden></span><span><b id="hudzoom">100%</b><span id="hudzl"> zoom</span></span><span id="hudhead">Facing SSE · 155°</span><span id="hudahead" hidden></span></div>
     <div class="aim" id="aim" hidden aria-hidden="true"></div>
     <canvas class="minimap" id="minimap" hidden tabindex="0" aria-label="Plan of the apartment showing where you stand and which way you face. Click a spot to walk there."></canvas>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <div class="fbar" id="fbar" hidden aria-live="polite"><b id="fbname"></b><button type="button" id="fbrot" title="Turn 90° (R)">↻ 90°</button><button type="button" id="fbdel" class="danger" title="Remove (Delete)">Remove</button><button type="button" id="fbdone">Done</button><span class="fx" id="fbinfo"></span></div>
     <div class="pcard" id="pcard" hidden aria-live="polite"><button type="button" class="px" id="pcardx" aria-label="Close">×</button><b id="pcardt"></b><span class="pl" id="pcardl"></span></div>
     <div class="zoomui" role="group" aria-label="Zoom">
       <button type="button" class="home" id="zhome" title="Stand at the main door at true size (H)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14.5V2.2l7-1v14.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8.3" cy="8.3" r=".9" fill="currentColor"/><path d="M1.5 14.5h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>At the door · 1:1</button>
       <button type="button" id="zmeas" aria-pressed="false" aria-label="Tape measure" title="Tape measure (M): click two points"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="6" width="17" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 6v3.5M8 6v2M11 6v3.5M14 6v2" stroke="currentColor" stroke-width="1.3"/></svg></button>
-      <button type="button" id="zin" aria-label="Zoom in" title="Zoom in (⌃W)">+</button>
-      <button type="button" id="zout" aria-label="Zoom out" title="Zoom out (⌃S)">−</button>
+      <button type="button" id="zin" aria-label="Zoom in" title="Zoom in (⌥+)">+</button>
+      <button type="button" id="zout" aria-label="Zoom out" title="Zoom out (⌥−)">−</button>
       <button type="button" id="z11" aria-label="True to life, 100%" title="True to life (100%): real sizes and distances" hidden>1:1</button>
       <button type="button" id="zall" aria-label="Show the whole apartment" title="Whole apartment">⤢</button>
     </div>
@@ -1061,7 +1111,7 @@ function goto(name,dur){
   applyState();
   try{history.replaceState(null,'',name==='overview'?location.pathname+location.search:location.pathname+location.search+'#'+name);}catch(e){}
 }
-[].forEach.call(document.querySelectorAll('#views button'),function(b){b.addEventListener('click',function(){stopTour();goto(b.getAttribute('data-view'));});});
+[].forEach.call(document.querySelectorAll('#views button'),function(b){b.addEventListener('click',function(){goto(b.getAttribute('data-view'));});});
 
 // walk: double-click floor, keys
 var ray=new T.Raycaster(), ndc=new T.Vector2();
@@ -1093,26 +1143,56 @@ document.getElementById('zhome').addEventListener('click',toDoor);
 document.getElementById('z11').addEventListener('click',function(){if(mode==='eye'){setEyeZoom(1);dirty=true;}});
 renderer.domElement.addEventListener('wheel',function(e){ if(mode!=='eye')return; e.preventDefault(); zoomBy(e.deltaY>0?1.06:0.94); },{passive:false});
 
-// keyboard: arrows move (forward, back, sideways), A/D look left/right, H back to the door.
-// With Control (the client's choice, 30 Sep): W zoom in and S zoom out (hold to keep zooming), D steps the doors
-// open > closed > none, A shows or hides the controls. Command shortcuts are left to the browser.
-var KEYS=['arrowup','arrowdown','arrowleft','arrowright','a','d'];
+// keyboard (client's set, 1 Oct 2026): arrows walk, A/D turn, W/S tilt up and down as a drag would, H back to the
+// door, M the tape measure, ? the guide. Option (Alt on Windows): + and − zoom, S shows or hides the controls, and
+// 1 to 0 step through the main switches, each press showing a note of what it changed. Keys are read by their
+// position (e.code), since Option turns letters and digits into symbols on a Mac.
+var KEYS=['arrowup','arrowdown','arrowleft','arrowright','a','d','w','s'];
+var IS_MAC=/Mac|iPhone|iPad/.test((navigator.platform||'')+' '+navigator.userAgent), MODK=IS_MAC?'⌥':'Alt+';
 var DOOR_CYCLE={open:'closed',closed:'none',none:'open'};
+var toastEl=document.getElementById('toast'), toastT=null;
+function toast(k,txt){ toastEl.textContent=''; if(k){ var kb=document.createElement('kbd'); kb.textContent=k; toastEl.appendChild(kb); } toastEl.appendChild(document.createTextNode(txt));
+  toastEl.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('on'); },1600); }
+function nameOf(key,v){ var b=document.querySelector('.bt[data-state="'+key+'"] button[data-v="'+v+'"]'); return b?b.textContent:v; }
+function cycle(key,vals,label,num){ var i=vals.indexOf(state[key]), v=vals[(i+1)%vals.length]; setKey(key,v,true); if(key==='dim')makeLabels(); applyState(); toast(MODK+num,label+': '+nameOf(key,v)); }
+var LAYOUT_ORDER=['existing','p1','c','d'], lastEye=null;
+var TOGGLES={
+  Digit1:function(){ var k=LAYOUT_ORDER[(LAYOUT_ORDER.indexOf(LAYOUT)+1)%4]; setLayout(k); toast(MODK+'1','Plan: '+SCENE.name); },
+  Digit2:function(){ cycle('fu',['all','built','none'],'Furniture',2); },
+  Digit3:function(){ cycle('wm',['auto','glass','solid'],'Walls',3); },
+  Digit4:function(){ cycle('d',['open','closed','none'],'Doors',4); },
+  Digit5:function(){ cycle('look',['natural','model'],'Look',5); },
+  Digit6:function(){ var night=NIGHT>=.5; state.hour=night?12:20.5; timeEl.value=state.hour; setSun(); toast(MODK+'6',night?'Midday, 12:00':'Evening, 20:30 · lights on'); },
+  Digit7:function(){ var o=lxSel.options, i=(lxSel.selectedIndex+1)%o.length; lxSel.selectedIndex=i; lxSel.dispatchEvent(new Event('change')); toast(MODK+'7','Lights: '+o[i].text); },
+  Digit8:function(){ cycle('dim',['off','on'],'Dimensions',8); },
+  Digit9:function(){ if(mode==='eye')goto('overview'); cycle('cut',['full','cut'],'Height from above',9); },
+  Digit0:function(){ if(mode==='eye'){ lastEye={p:camera.position.clone(),t:controls.target.clone(),z:EYEZ}; goto('overview'); toast(MODK+'0','Overview · again to go back'); }
+    else if(lastEye){ var le=lastEye; goto('entrance'); if(anim){ anim.toP=le.p; anim.toT=le.t; } setEyeZoom(le.z); toast(MODK+'0','Back where you stood'); }
+    else { toDoor(); toast(MODK+'0','At the door'); } }
+};
+function tilt(ang){ // look up (+) or down (−), as dragging up or down does
+  if(mode==='eye'){ var v=controls.target.clone().sub(camera.position), L=v.length(), h=Math.hypot(v.x,v.z), yaw=Math.atan2(v.z,v.x), pitch=Math.max(-1.45,Math.min(1.45,Math.atan2(v.y,h)+ang));
+    controls.target.copy(camera.position).add(new T.Vector3(Math.cos(yaw)*Math.cos(pitch),Math.sin(pitch),Math.sin(yaw)*Math.cos(pitch)).multiplyScalar(L)); }
+  else { var w=camera.position.clone().sub(controls.target), R=w.length(), pol=Math.max(.05,Math.min(controls.maxPolarAngle,Math.acos(w.y/R)+ang)), az=Math.atan2(w.x,w.z);
+    camera.position.copy(controls.target).add(new T.Vector3(Math.sin(pol)*Math.sin(az),Math.cos(pol),Math.sin(pol)*Math.cos(az)).multiplyScalar(R)); }
+  dirty=true;
+}
 window.addEventListener('keydown',function(e){
-  if(e.altKey||/input|textarea|select/i.test(e.target.tagName))return;
-  if(e.key==='Escape'){ clearCard(); stopTour(); if(measuring)clearMeasures(); return; }
-  if(!e.ctrlKey&&!e.metaKey&&e.key.toLowerCase()==='m'){ setMeasuring(!measuring); e.preventDefault(); return; }
-  var k=e.key.toLowerCase();
-  if(!e.ctrlKey&&KEYS.indexOf(k)>-1)stopTour();
-  if(e.metaKey)return;
-  if(e.ctrlKey){
-    if(e.shiftKey)return;
-    if(k==='w'){zoomBy(0.9);e.preventDefault();}
-    else if(k==='s'){zoomBy(1.11);e.preventDefault();}
-    else if(k==='d'){ if(!e.repeat){setKey('d',DOOR_CYCLE[state.d]||'open',true);applyState();} e.preventDefault(); }
-    else if(k==='a'){ if(!e.repeat&&window.togglePanel)window.togglePanel(); e.preventDefault(); }
+  if(/input|textarea|select/i.test(e.target.tagName))return;
+  if(e.key==='Escape'){ if(!kguide.hidden){ showGuide(false); return; } clearCard(); if(measuring)clearMeasures(); return; }
+  if(e.metaKey||e.ctrlKey)return;                         // Command and Control stay with the browser
+  if(e.altKey){
+    var c=e.code;
+    if(c==='Equal'||c==='NumpadAdd'){ zoomBy(.9); e.preventDefault(); return; }
+    if(c==='Minus'||c==='NumpadSubtract'){ zoomBy(1.11); e.preventDefault(); return; }
+    if(c==='KeyS'){ if(!e.repeat)window.togglePanel(); e.preventDefault(); return; }
+    if(TOGGLES[c]){ if(!e.repeat)TOGGLES[c](); e.preventDefault(); return; }
     return;
   }
+  if(e.key==='?'){ showGuide(kguide.hidden); e.preventDefault(); return; }
+  if(!kguide.hidden)return;
+  if(e.key.toLowerCase()==='m'){ setMeasuring(!measuring); e.preventDefault(); return; }
+  var k=e.key.toLowerCase();
   if(k==='h'){toDoor();e.preventDefault();return;}
   if(KEYS.indexOf(k)<0)return;
   e.preventDefault();
@@ -1140,7 +1220,8 @@ function walk(dt){
   if(anim)return;
   var f=(keys['arrowup']?1:0)-(keys['arrowdown']?1:0);
   var sd=(keys['arrowright']?1:0)-(keys['arrowleft']?1:0);
-  var rt=(keys['a']?1:0)-(keys['d']?1:0);
+  var rt=(keys['a']?1:0)-(keys['d']?1:0), up=(keys['w']?1:0)-(keys['s']?1:0);
+  if(up)tilt(up*.75*dt*(mode==='eye'?1:-1));
   if(!f&&!sd&&!rt)return;
   var eye=mode==='eye';
   if(f||sd){                                            // move on the floor plane, relative to where you face
@@ -1192,7 +1273,7 @@ function setLayout(k){
   if(!ALL.layouts[k])return;
   LAYOUT=k; SCENE=ALL.layouts[k]; try{localStorage.setItem('azad-3d-layout',k);}catch(e){}
   if(!userSet.fu)setKey('fu',k==='existing'?'none':'all',false);
-  stopTour(); clearCard(); fSel=null; clearModel(); buildModel(); makeWindowLights(); makeLighting(); makeLabels(); syncLayoutUI(); applyState(); dirty=true;
+  clearCard(); fSel=null; clearModel(); buildModel(); makeWindowLights(); makeLighting(); makeLabels(); syncLayoutUI(); applyState(); dirty=true;
 }
 function syncLayoutUI(){
   [].forEach.call(document.querySelectorAll('#layout button'),function(b){b.setAttribute('aria-pressed',b.getAttribute('data-v')===LAYOUT?'true':'false');});
@@ -1225,7 +1306,7 @@ window.addEventListener('resize',function(){resize();dirty=true;});
   function setW(w,save){ pw=Math.round(Math.max(250,Math.min(Math.min(560,window.innerWidth*.6),w))); appEl.style.setProperty('--pw',pw+'px');
     grip.setAttribute('aria-valuenow',pw); resize(); dirty=true; if(save)store(); }
   function setHidden(hd,save){ appEl.classList.toggle('hidepanel',hd); tog.textContent=hd?'›':'‹';
-    tog.setAttribute('aria-label',hd?'Show the controls':'Hide the controls'); tog.title=tog.getAttribute('aria-label')+' (⌃A)';
+    tog.setAttribute('aria-label',hd?'Show the controls':'Hide the controls'); tog.title=tog.getAttribute('aria-label')+' ('+(/Mac|iPhone|iPad/.test((navigator.platform||'')+' '+navigator.userAgent)?'⌥':'Alt+')+'S)';
     resize(); dirty=true; if(save)store(); }
   function store(){ try{localStorage.setItem('azad-3d-panel',JSON.stringify({w:pw,h:appEl.classList.contains('hidepanel')}));}catch(e){} }
   var st=null; try{st=JSON.parse(localStorage.getItem('azad-3d-panel')||'null');}catch(e){}
@@ -1333,7 +1414,7 @@ function pickAt(cx,cy){
   }
   var pc=pieceAt(x,y,z); if(pc)showCard(pc.n,describe(pc),pc.b); else clearCard();
 }
-renderer.domElement.addEventListener('pointerdown',function(e){ downAt={x:e.clientX,y:e.clientY,t:performance.now()}; stopTour(); });
+renderer.domElement.addEventListener('pointerdown',function(e){ downAt={x:e.clientX,y:e.clientY,t:performance.now()}; });
 renderer.domElement.addEventListener('pointerup',function(e){
   if(!downAt)return; var moved=Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y), held=performance.now()-downAt.t; downAt=null;
   if(moved>6||held>450||e.button>0)return;
@@ -1480,7 +1561,7 @@ function fRotate(deg){ var p=fList().filter(function(q){return q.id===fSel;})[0]
 function fRemove(){ furn[LAYOUT]=fList().filter(function(q){return q.id!==fSel;}); fSel=null; fSync(); fSave(); }
 function setFurnish(on){
   fOn=on; var b=document.getElementById('fmode'); b.setAttribute('aria-pressed',on?'true':'false'); b.textContent=on?'Stop furnishing':'Start furnishing';
-  if(on){ clearCard(); stopTour(); if(measuring)setMeasuring(false); document.getElementById('sec-furnish').open=true;
+  if(on){ clearCard(); if(measuring)setMeasuring(false); selectTab('furnish'); if(appEl.classList.contains('hidepanel'))window.togglePanel();
     if(state.fu!=='all'){ setKey('fu','all',true); applyState(); }
     var rm=mode==='eye'?roomAt(camera.position.x/S,camera.position.z/S):null, cx=rm?(rm.r[0]+rm.r[2])/2:900, cy=rm?(rm.r[1]+rm.r[3])/2:950, span=rm?Math.max(rm.r[2]-rm.r[0],rm.r[3]-rm.r[1]):1800;
     goto('overview'); if(anim){ anim.toT=P(cx,cy,0); anim.toP=P(cx,cy+span*.3,Math.max(700,span*1.3)); }
@@ -1545,6 +1626,37 @@ if(window.claude&&window.claude.use){
   }).catch(function(){});
 }
 
+
+// ---------- the panel's tabs, the shortcut guide, and the shortcut labels (⌥ on a Mac, Alt+ elsewhere)
+function selectTab(t){
+  [].forEach.call(document.querySelectorAll('.tabs button'),function(b){ var on=b.getAttribute('data-tab')===t; b.setAttribute('aria-selected',on?'true':'false'); b.tabIndex=on?0:-1; });
+  [].forEach.call(document.querySelectorAll('.tabp'),function(p){ p.hidden=p.id!=='tab-'+t; });
+  try{ localStorage.setItem('azad-3d-tab',t); }catch(e){}
+}
+[].forEach.call(document.querySelectorAll('.tabs button'),function(b){ b.addEventListener('click',function(){ selectTab(b.getAttribute('data-tab')); }); });
+(function(){ var t='go'; try{ t=localStorage.getItem('azad-3d-tab')||'go'; }catch(e){} if(!document.getElementById('tab-'+t))t='go'; selectTab(t); })();
+[].forEach.call(document.querySelectorAll('.sk[data-k]'),function(k){ k.textContent=MODK+k.getAttribute('data-k'); });
+document.getElementById('layout').title='Plan ('+MODK+'1 steps through them)';
+var kguide=document.getElementById('kguide');
+var GUIDE=[
+  ['Move',[['Walk forward, back, sideways',['↑','↓','←','→']],['Turn left or right',['A','D']],['Tilt up or down',['W','S']],['Zoom in or out',[MODK+'+',MODK+'−']],
+    ['Back to the front door, true size',['H']],['Overview, then back where you stood',[MODK+'0']]]],
+  ['Switch',[['Plan: As built, Proposal 1, Rev 3.1, Rev 4',[MODK+'1']],['Furniture: all, built-in, none',[MODK+'2']],['Walls: auto, glass, solid',[MODK+'3']],
+    ['Doors: open, closed, none',[MODK+'4']],['Look: finishes or white model',[MODK+'5']],['Midday or evening',[MODK+'6']],['Lighting scene, next',[MODK+'7']],
+    ['Dimensions on or off',[MODK+'8']],['Height from above: 2.80 m or cut',[MODK+'9']],['Show or hide the controls',[MODK+'S']]]],
+  ['Tools',[['Tape measure',['M']],['Close a card or clear measurements',['Esc']],['Furnishing: turn the piece 90° (15°)',['R','Shift R']],['Furnishing: remove the piece',['Delete']],['This guide',['?']]]]
+];
+(function(){ var host=document.getElementById('kcols');
+  document.getElementById('kgintro').textContent=(IS_MAC?'Option (⌥)':'Alt')+' with a number steps a switch to its next setting; a note at the top says what changed. The same shortcuts are shown beside each control in the panel.';
+  GUIDE.forEach(function(g){ var h=document.createElement('h3'); h.textContent=g[0]; host.appendChild(h);
+    g[1].forEach(function(r){ var row=document.createElement('div'); row.className='krow'; var a=document.createElement('span'); a.textContent=r[0]; var ks=document.createElement('span'); ks.className='keys';
+      r[1].forEach(function(k){ var kb=document.createElement('kbd'); kb.textContent=k; ks.appendChild(kb); }); row.appendChild(a); row.appendChild(ks); host.appendChild(row); }); }); })();
+function showGuide(on){ kguide.hidden=!on; if(on)document.getElementById('kgclose').focus(); }
+document.getElementById('keysbtn').addEventListener('click',function(){ showGuide(true); });
+document.getElementById('keysbtn2').addEventListener('click',function(){ showGuide(true); });
+document.getElementById('kgclose').addEventListener('click',function(){ showGuide(false); });
+kguide.addEventListener('click',function(e){ if(e.target===kguide)showGuide(false); });
+
 // ---------- the plan, top right while you stand: where you are and which way you face. Click a spot to walk there.
 var mm=document.getElementById('minimap'), mmCtx=mm.getContext('2d'), mmBase=document.createElement('canvas'), mmKey='', MMB=[-40,-40,1830,1673];
 function mmSize(){ var w=mm.clientWidth||200, h=mm.clientHeight||182, d=Math.min(window.devicePixelRatio||1,2), W=Math.round(w*d), H=Math.round(h*d);
@@ -1578,26 +1690,12 @@ mm.addEventListener('click',function(e){
   var onFloor=roomAt(px,py)||inPoly(px,py,SCENE.garden), to=P(px,py,EYE);
   var free=onFloor&&castDist(viewObstacles(),to,new T.Vector3(0,-1,0),3)>=to.y-.12;
   if(!free){ statusEl.hidden=false; statusEl.textContent=onFloor?'Something stands there: pick a clear spot on the floor.':'Pick a spot inside the apartment or the garden.'; return; }
-  stopTour(); clearCard();
+  clearCard();
   var dir=controls.target.clone().sub(camera.position);
   anim={t0:performance.now(),dur:900,from:{p:camera.position.clone(),t:controls.target.clone()},toP:to,toT:to.clone().add(dir)};
   var hop=camera.position.distanceTo(to); if(hop>4){ anim.arc=Math.min(5,hop*.45); anim.dur=1500; }
 });
 
-// ---------- the tour: every view of this layout in turn, gliding between them; any click or key stops it
-var tour=null, tourBtn=document.getElementById('tourbtn');
-function tourList(){ return [].map.call(document.querySelectorAll('#views button[data-view]'),function(b){ return b.hidden?null:b.getAttribute('data-view'); }).filter(function(v){ return v&&v!=='overview'; }); }
-function stopTour(){ if(!tour)return; tour=null; tourBtn.textContent='▶ Play the tour'; tourBtn.setAttribute('aria-pressed','false'); }
-function nextStop(){
-  tour.i++;
-  if(tour.i>=tour.list.length){ stopTour(); goto('overview',2400); statusEl.textContent='That was the tour. Drag to look around, or pick a view.'; return; }
-  goto(tour.list[tour.i],2600); tour.phase='glide';
-  statusEl.textContent='Tour '+(tour.i+1)+' of '+tour.list.length+' · '+statusEl.textContent;
-}
-function startTour(){ var l=tourList(); if(!l.length)return; clearCard(); tour={list:l,i:-1,phase:'glide',t0:0};
-  tourBtn.textContent='■ Stop the tour'; tourBtn.setAttribute('aria-pressed','true'); nextStop(); }
-function tickTour(now){ if(!tour||anim)return; if(tour.phase==='glide'){ tour.phase='hold'; tour.t0=now; } else if(now-tour.t0>4800)nextStop(); }
-tourBtn.addEventListener('click',function(e){ e.stopPropagation(); tour?stopTour():startTour(); });
 
 // ---------- drawing: a quick frame while you move, the full-quality frame (ambient occlusion on) the moment you stop
 var STATS={frames:0,ms:0,last:0,calls:0,tris:0,dpr:DPR,low:LOWEND};
@@ -1627,7 +1725,7 @@ function loop(now){
     dirty=true; if(t>=1)anim=null;}
   var fly=!!(anim&&anim.arc&&camera.position.y>2.5);
   if(fly!==flying){ flying=fly; ceilings.forEach(function(m){ m.visible=mode==='eye'&&!fly; }); renderer.shadowMap.needsUpdate=true; }
-  tickTour(now);
+
   var moving=!!anim||KEYS.some(function(k){return keys[k];});
   walk(dt); tickSun(dt); controls.update();
   if(moving)adaptQuality(raw,now);
