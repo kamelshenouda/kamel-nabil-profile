@@ -124,6 +124,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .minimap{position:absolute;right:12px;top:58px;width:200px;height:182px;border-radius:8px;background:rgba(251,250,247,.9);box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:crosshair;touch-action:manipulation}
 .minimap:focus-visible{outline:2px solid #2E5A74;outline-offset:2px}
 .hud #hudroom{font-weight:700;padding-right:10px;border-right:1px solid rgba(29,33,37,.18)}
+.zoomui button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.zoomui #zmeas svg{width:20px;height:20px}
+.mlbl{position:absolute;transform:translate(-50%,-50%);font:600 13px var(--mono);color:#fff;background:#2E5A74;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:3}
+.mlbl small{font-weight:500;opacity:.85;margin-left:6px}
 .tourbtn{appearance:none;border:1px solid var(--accent);background:transparent;color:var(--accent);font:600 13px var(--display);padding:8px 10px;border-radius:6px;cursor:pointer;text-align:left}
 .tourbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .tourbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -238,6 +242,7 @@ h3{font-weight:600}
       <b>Top right:</b> standing, the zoom (100% is true size: things look their real size and distance; below 100% you see more of the room, but it looks bigger than it is); from above, how far away you are. Then the compass direction you face; the red needle points north.<br>
       <b>VR headset:</b> Enter VR puts you in the room at true scale; your own head height sets the eye level. Point a controller at the floor and pull the trigger to move there; push a thumbstick left or right to turn, forward or back to walk.<br>
       <b>What is it?</b> Click or tap any piece for its name, real size and finish, outlined in the model; click a floor for the room's size. Esc or × closes it.<br>
+      <b>Tape measure:</b> the ruler button (or <kbd>M</kbd>), then click two points on any surface: floor, wall, worktop. The distance shows in metres, with the level and height parts when they differ. Esc clears.<br>
       <b>Plan:</b> standing, the small plan top right shows where you are and which way you face; click it to walk there.<br>
       <b>Tour:</b> Play the tour glides through every view of this layout and stops on any click or key.<br>
       <b>Standing:</b> drag to look around; zooming out widens the view. Double-click (or double-tap) the floor to walk there. Walking with the arrows, walls, glass and closed doors stop you and you slide along them.<br>
@@ -258,6 +263,7 @@ h3{font-weight:600}
     <div class="pcard" id="pcard" hidden aria-live="polite"><button type="button" class="px" id="pcardx" aria-label="Close">×</button><b id="pcardt"></b><span class="pl" id="pcardl"></span></div>
     <div class="zoomui" role="group" aria-label="Zoom">
       <button type="button" class="home" id="zhome" title="Stand at the main door at true size (H)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14.5V2.2l7-1v14.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8.3" cy="8.3" r=".9" fill="currentColor"/><path d="M1.5 14.5h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>At the door · 1:1</button>
+      <button type="button" id="zmeas" aria-pressed="false" aria-label="Tape measure" title="Tape measure (M): click two points"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="6" width="17" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 6v3.5M8 6v2M11 6v3.5M14 6v2" stroke="currentColor" stroke-width="1.3"/></svg></button>
       <button type="button" id="zin" aria-label="Zoom in" title="Zoom in (⌃W)">+</button>
       <button type="button" id="zout" aria-label="Zoom out" title="Zoom out (⌃S)">−</button>
       <button type="button" id="z11" aria-label="True to life, 100%" title="True to life (100%): real sizes and distances" hidden>1:1</button>
@@ -1027,7 +1033,7 @@ var ray=new T.Raycaster(), ndc=new T.Vector2();
 ray.firstHitOnly=true;
 renderer.domElement.addEventListener('dblclick',function(e){
   clearTimeout(clickTimer);
-  if(mode!=='eye')return;
+  if(mode!=='eye'||measuring)return;
   var r=renderer.domElement.getBoundingClientRect(); ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
   ray.setFromCamera(ndc,camera); var hit=ray.intersectObjects(floors.filter(function(o){return o.visible;}),false)[0]; if(!hit)return;
   var dir=controls.target.clone().sub(camera.position);
@@ -1059,7 +1065,8 @@ var KEYS=['arrowup','arrowdown','arrowleft','arrowright','a','d'];
 var DOOR_CYCLE={open:'closed',closed:'none',none:'open'};
 window.addEventListener('keydown',function(e){
   if(e.altKey||/input|textarea|select/i.test(e.target.tagName))return;
-  if(e.key==='Escape'){ clearCard(); stopTour(); return; }
+  if(e.key==='Escape'){ clearCard(); stopTour(); if(measuring)clearMeasures(); return; }
+  if(!e.ctrlKey&&!e.metaKey&&e.key.toLowerCase()==='m'){ setMeasuring(!measuring); e.preventDefault(); return; }
   var k=e.key.toLowerCase();
   if(!e.ctrlKey&&KEYS.indexOf(k)>-1)stopTour();
   if(e.metaKey)return;
@@ -1295,9 +1302,42 @@ renderer.domElement.addEventListener('pointerdown',function(e){ downAt={x:e.clie
 renderer.domElement.addEventListener('pointerup',function(e){
   if(!downAt)return; var moved=Math.hypot(e.clientX-downAt.x,e.clientY-downAt.y), held=performance.now()-downAt.t; downAt=null;
   if(moved>6||held>450||e.button>0)return;
-  var cx=e.clientX, cy=e.clientY; clearTimeout(clickTimer); clickTimer=setTimeout(function(){ pickAt(cx,cy); },mode==='eye'?260:0);   // standing, wait to see if it's a double-click to walk
+  var cx=e.clientX, cy=e.clientY; clearTimeout(clickTimer);
+  if(measuring){ measureAt(cx,cy); return; }
+  clickTimer=setTimeout(function(){ pickAt(cx,cy); },mode==='eye'?260:0);   // standing, wait to see if it's a double-click to walk
 });
 document.getElementById('pcardx').addEventListener('click',clearCard);
+
+
+// ---------- tape measure: click two points on any surface; the true distance, and its level and height parts
+var measuring=false, mFirst=null, mMarker=null, measures=[], measBtn=document.getElementById('zmeas');
+var mLineMat=new T.LineBasicMaterial({color:0x2E5A74,depthTest:false,transparent:true}), mDotMat=new T.MeshBasicMaterial({color:0x2E5A74,depthTest:false,transparent:true});
+function setMeasuring(on){ measuring=on; measBtn.setAttribute('aria-pressed',on?'true':'false'); clearCard();
+  if(!on){ clearMeasures(); renderer.domElement.style.cursor=''; } else { renderer.domElement.style.cursor='crosshair'; statusEl.hidden=false; statusEl.textContent='Tape measure: click the first point.'; } }
+function dot(p){ var m=new T.Mesh(new T.SphereGeometry(.025,16,10),mDotMat); m.position.copy(p); m.renderOrder=11; scene.add(m); return m; }
+function clearMeasures(){ measures.forEach(function(q){ [q.line,q.a,q.b].forEach(function(o){scene.remove(o);o.geometry.dispose();}); q.el.remove(); }); measures=[];
+  if(mMarker){scene.remove(mMarker);mMarker.geometry.dispose();mMarker=null;} mFirst=null; dirty=true; }
+function measureAt(cx,cy){
+  var r=renderer.domElement.getBoundingClientRect(), cut=state.cut==='cut'&&mode==='overview';
+  ndc.set(((cx-r.left)/r.width)*2-1,-((cy-r.top)/r.height)*2+1); pickRay.setFromCamera(ndc,camera); pickRay.firstHitOnly=!cut;
+  var hit=pickRay.intersectObjects(solids.concat(floors,caps).filter(function(o){return o.visible&&o.isMesh;}),false).filter(function(h){ return !cut||h.point.y<=1.25; })[0];
+  if(!hit)return;
+  var p=hit.point.clone();
+  if(!mFirst){ mFirst=p; mMarker=dot(p); statusEl.hidden=false; statusEl.textContent='Tape measure: now click the second point.'; dirty=true; return; }
+  var a=mFirst, d=a.distanceTo(p)/S, dy=Math.abs(p.y-a.y)/S, dh=Math.hypot(p.x-a.x,p.z-a.z)/S;
+  if(dy<2){ p.y=a.y; d=dh; }                                            // within 2 cm of level counts as level
+  var line=new T.Line(new T.BufferGeometry().setFromPoints([a,p]),mLineMat); line.renderOrder=10; scene.add(line);
+  var el=document.createElement('div'); el.className='mlbl'; el.textContent=(d/100).toFixed(2)+' m';
+  if(dy>=2&&dh>=2){ var sm=document.createElement('small'); sm.textContent=(dh/100).toFixed(2)+' level · '+(dy/100).toFixed(2)+' up'; el.appendChild(sm); }
+  stage.appendChild(el);
+  measures.push({line:line,a:mMarker,b:dot(p),el:el,mid:a.clone().add(p).multiplyScalar(.5)}); mMarker=null; mFirst=null;
+  if(measures.length>4){ var o=measures.shift(); [o.line,o.a,o.b].forEach(function(x){scene.remove(x);x.geometry.dispose();}); o.el.remove(); }
+  statusEl.textContent='Measured '+el.textContent+'. Click again for another, Esc to clear, M to stop.'; dirty=true;
+}
+function drawMeasures(){ var W=stage.clientWidth,H=stage.clientHeight,v=new T.Vector3();
+  measures.forEach(function(q){ v.copy(q.mid).project(camera); var vis=v.z<1&&Math.abs(v.x)<1.05&&Math.abs(v.y)<1.05; q.el.hidden=!vis;
+    if(vis){ q.el.style.left=((v.x+1)/2*W)+'px'; q.el.style.top=((1-v.y)/2*H)+'px'; } }); }
+measBtn.addEventListener('click',function(){ setMeasuring(!measuring); });
 
 // ---------- the plan, top right while you stand: where you are and which way you face. Click a spot to walk there.
 var mm=document.getElementById('minimap'), mmCtx=mm.getContext('2d'), mmBase=document.createElement('canvas'), mmKey='', MMB=[-40,-40,1830,1673];
@@ -1385,7 +1425,7 @@ function loop(now){
   var moving=!!anim||KEYS.some(function(k){return keys[k];});
   walk(dt); tickSun(dt); controls.update();
   if(moving)adaptQuality(raw,now);
-  if(moving||dirty){ draw(false); drawLabels(); drawDims(); hud(); drawMinimap(); placeCard(); dirty=false; needFull=true; idleT=now; }
+  if(moving||dirty){ draw(false); drawLabels(); drawDims(); hud(); drawMinimap(); placeCard(); drawMeasures(); dirty=false; needFull=true; idleT=now; }
   else if(needFull&&now-idleT>140){ draw(true); needFull=false; }        // idle frames skip rendering entirely
 }
 
