@@ -186,7 +186,7 @@ h3{font-weight:600}
       <h2>Show</h2>
       <div class="seg lay"><span>Model</span><div class="bt" id="layout"><button type="button" data-v="existing" aria-pressed="false" title="The shell as the architect handed it over">As built</button><button type="button" data-v="p1" aria-pressed="false" title="Andrew's Proposal 1 (28 Sep), with the kitchen, dining, utility and foyer fitted out">Proposal 1</button><button type="button" data-v="c" aria-pressed="false" title="Rev 3.1: open kitchen with a fluted-glass screen">Open kitchen</button><button type="button" data-v="d" aria-pressed="false" title="Rev 4: fully open plan">Open plan</button></div></div>
       <div class="seg"><span>Furniture</span><div class="bt" data-state="fu"><button type="button" data-v="all" aria-pressed="true" title="Furniture, built-ins and the garden furniture">All</button><button type="button" data-v="built" aria-pressed="false" title="Kitchen, wardrobes, bathrooms and joinery only">Built-in</button><button type="button" data-v="none" aria-pressed="false" title="Empty rooms">None</button></div></div>
-      <div class="seg"><span>Walls</span><div class="bt" data-state="wm"><button type="button" data-v="glass" aria-pressed="true" title="Washed, frosted glass walls: you sense the rooms beyond">Frosted glass</button><button type="button" data-v="solid" aria-pressed="false" title="Painted plaster walls, as built">Solid</button></div></div>
+      <div class="seg"><span>Walls</span><div class="bt" data-state="wm"><button type="button" data-v="auto" aria-pressed="true" title="Washed glass from above; calm, solid walls when you stand in a room">Auto</button><button type="button" data-v="glass" aria-pressed="false" title="Washed, frosted glass walls everywhere: you sense the rooms beyond">Glass</button><button type="button" data-v="solid" aria-pressed="false" title="Painted plaster walls, as built">Solid</button></div></div>
       <div class="seg"><span>Look</span><div class="bt" data-state="look"><button type="button" data-v="natural" aria-pressed="true" title="Your finishes: oak, porcelain, stone, fabrics">Finishes</button><button type="button" data-v="model" aria-pressed="false" title="A clean white architectural model with the oak kept">Model</button></div></div>
       <div class="seg"><span>Dimensions</span><div class="bt" data-state="dim"><button type="button" data-v="off" aria-pressed="true">Off</button><button type="button" data-v="on" aria-pressed="false" title="Room widths and lengths in metres, from the survey">On</button></div></div>
       <p class="hint" id="hint"></p>
@@ -238,7 +238,7 @@ h3{font-weight:600}
       <b>Plan:</b> standing, the small plan top right shows where you are and which way you face; click it to walk there.<br>
       <b>Tour:</b> Play the tour glides through every view of this layout and stops on any click or key.<br>
       <b>Standing:</b> drag to look around; zooming out widens the view. Double-click (or double-tap) the floor to walk there. Walking with the arrows, walls, glass and closed doors stop you and you slide along them.<br>
-      <b>Walls:</b> frosted glass shows the rooms beyond as soft, light-filled blur; Solid shows painted walls as they will be built. <b>Look:</b> Finishes shows your materials; Model shows a clean white architectural model with the oak kept.<br>
+      <b>Walls:</b> Auto shows washed glass from above and solid walls when you stand in a room; Glass keeps the soft, light-filled blur everywhere; Solid shows painted walls as they will be built. <b>Look:</b> Finishes shows your materials; Model shows a clean white architectural model with the oak kept.<br>
       <b>Quality:</b> while you move, the view draws fast; the moment you stop it redraws at full quality with soft contact shading.
           </div>
     </details>
@@ -413,16 +413,18 @@ function glassWall(kind){
       var tr=.84+.14*Math.pow(t,1.3), ro=1-.42*Math.pow(t,1.1); g.fillStyle='rgb('+Math.round(tr*255)+','+Math.round(ro*255)+',0)'; g.fillRect(0,h-1-y,w,1);} },true);
     fade.wrapT=T.ClampToEdgeWrapping; fade.repeat.set(1,TEXM_WALL/CEIL_M);
     o.transmissionMap=fade; o.roughnessMap=fade; }
+  if(kind==='veil'){o.roughness=1;o.transmission=.5;o.color=0xFFFFFF;o.thickness=.3;o.attenuationColor=new T.Color(0xF3EEE6);o.attenuationDistance=.6;o.clearcoat=.3;o.clearcoatRoughness=.1;}
   if(kind==='milky'){o.roughness=.9;o.transmission=.84;o.color=0xFFFFFF;o.thickness=.3;o.attenuationColor=new T.Color(0xF5F1EA);o.attenuationDistance=.7;}
   if(kind==='gloss'){o.roughness=.9;o.transmission=.84;o.color=0xFFFFFF;o.thickness=.3;o.attenuationColor=new T.Color(0xF5F1EA);o.attenuationDistance=.7;o.clearcoat=.7;o.clearcoatRoughness=.06;}
   if(kind==='glow'){o.roughness=.95;o.transmission=.72;o.color=0xFFFFFF;o.thickness=.3;o.attenuationColor=new T.Color(0xF7F3EC);o.attenuationDistance=.8;o.clearcoat=.5;o.clearcoatRoughness=.06;o.emissive=new T.Color(0xFFFBF4);o.emissiveIntensity=.06;}
   return phys(o);
 }
 M.glasswall=glassWall(FX.glass);
+M.glassveil=glassWall('veil');
 M.cap=std({color:0xF7F5F1,roughness:.55});                // a crisp white top on the glass walls, like the edge of a cut acrylic model
 var TEXM={oak:.9,oakdark:.9,slats:.34,shutter:.045,oakfloor:1.2,porcelain:.9,stone:.6,travertine:1.2,rug:2,grass:3,pave:1.2,fluted:.4,quartz:.8,wall:2,wallpaint:2,fabric:.25,linen:.25,leaf:1};
 // the 'Model' look: a clean white architectural model, keeping the oak, the glass, the black details and the planting
-var MODEL_KEEP={oak:1,oakdark:1,slats:1,glass:1,fluted:1,satin:1,glasswall:1,black:1,frame:1,steel:1,led:1,lamp:1,leaf:1,grass:1,soil:1,trunk:1,fin:1,bronze:1,keys:1};
+var MODEL_KEEP={oak:1,oakdark:1,slats:1,glass:1,fluted:1,satin:1,glasswall:1,glassveil:1,black:1,frame:1,steel:1,led:1,lamp:1,leaf:1,grass:1,soil:1,trunk:1,fin:1,bronze:1,keys:1};
 var MM={white:std({color:0xF2F0EB,roughness:.85}),floor:std({color:0xE9E6E0,roughness:.75}),ground:std({color:0xE6E3DC,roughness:1})};
 function modelBase(k){ if(MODEL_KEEP[k])return M[k];
   if(k==='porcelain'||k==='oakfloor'||k==='stone'||k==='pave'||k==='gravel')return MM.floor; return MM.white; }
@@ -540,14 +542,21 @@ function buildModel(){
   materialsForState(true);
   renderer.shadowMap.needsUpdate=true;
 }
+// Walls: Auto (the default) is washed glass from above and a calm wall when you stand in a room, where blur behind
+// a wall distracts; Frosted glass and Solid keep one look everywhere. ?eyewall=veil|solid picks the standing look.
+function wallKind(){
+  if(state.wm==='glass')return 'glasswall'; if(state.wm==='solid')return 'solid';
+  if(typeof mode==='undefined'||mode==='overview')return 'glasswall';
+  return Q.get('eyewall')==='veil'?'glassveil':'solid';
+}
 function materialsForState(force){
   built.forEach(function(o){ var u=o.userData; if(!u||!u.mk||u.fixed)return;
     var key=u.mk;
-    if(u.wall&&state.wm==='glass'&&key==='wall')key='glasswall';
+    if(u.wall&&key==='wall'){ var wk=wallKind(); if(wk!=='solid')key=wk; }
     if(u.dry&&state.fl==='wood')key='oakfloor';
     o.material=getMat(key,!!u.tall);
   });
-  glassEdges.forEach(function(e){e.userData.on=state.wm==='glass';});
+  glassEdges.forEach(function(e){e.userData.on=wallKind()==='glasswall';});
   if(typeof staticFloors!=='undefined')staticFloors.forEach(function(o){o.material=getMat(o.userData.mk,false);});
 }
 function clearModel(){
@@ -557,7 +566,7 @@ function clearModel(){
 
 // ---------- states (needed by the material factory, so declared before the first build)
 var state={k:'open',p:'open',d:'open',v:'now',season:'mar',hour:12,cut:'full',up:'on',sh:'open',gs:'pergola',aw:'out',fu:'all',fl:'stone',dim:'off',
-           wm:Q.get('walls')==='solid'?'solid':'glass',look:Q.get('look')==='model'?'model':'natural'};
+           wm:Q.get('walls')==='solid'?'solid':Q.get('walls')==='glass'?'glass':'auto',look:Q.get('look')==='model'?'model':'natural'};
 progress(.3,'Building the rooms…'); await tick();
 buildModel();
 // site: paving everywhere, grass in the garden
@@ -717,7 +726,7 @@ function applyState(){
     groups[g].forEach(function(o){o.visible=on;o.userData.grpOn=on;});
   });
   built.forEach(function(o){ if(o.userData&&o.userData.edge)o.visible=o.userData.grpOn!==false&&o.userData.on; });
-  caps.forEach(function(o){ o.visible=o.userData.grpOn!==false&&state.wm==='glass'&&mode==='overview'; });
+  caps.forEach(function(o){ o.visible=o.userData.grpOn!==false&&wallKind()==='glasswall'&&mode==='overview'; });
   stageFor(mode==='overview');
   UPPER.visible=state.up==='on';
   NEIGH.forEach(function(m){m.visible=state.up==='on';m.material=mode==='eye'?M.context:HIDDEN;m.renderOrder=mode==='eye'?0:-1;});
