@@ -284,6 +284,7 @@ import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import {mergeGeometries, mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
@@ -309,8 +310,8 @@ function progress(f,msg){ if(loadBar)loadBar.style.width=Math.round(f*100)+'%'; 
 
 // ---------- renderer / scene
 var renderer=new T.WebGLRenderer({antialias:false,powerPreference:'high-performance'});
-// phones and machines with few cores start a step lighter: fewer pixels, fewer ambient-occlusion samples, a smaller sun shadow map
-var LOWEND=(window.matchMedia&&matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820)||(navigator.hardwareConcurrency||8)<=4;
+// phones and dual-core machines start a step lighter: fewer pixels, fewer ambient-occlusion samples, a smaller sun shadow map
+var LOWEND=Q.get('tier')?Q.get('tier')==='low':(window.matchMedia&&matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820)||(navigator.hardwareConcurrency||8)<=2;   // ?tier=low|high to force
 var DPR=Math.min(window.devicePixelRatio||1,LOWEND?1.5:1.75), DPR_MAX=DPR;
 renderer.setPixelRatio(DPR);
 renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap; renderer.shadowMap.autoUpdate=false;   // shadows recompute only when the sun or the model changes
@@ -618,6 +619,7 @@ function setSun(){
   var up=Math.max(el,2)*R, d=new T.Vector3(Math.sin(rel)*Math.cos(up),Math.sin(up),-Math.cos(rel)*Math.cos(up));
   sun.position.copy(centre).addScaledVector(d,150);
   var day=Math.max(0,Math.min(1,(el+2)/8));          // 0 at dusk, 1 once the sun is 6° up
+  DAY=day; if(typeof setWindowLights==='function')setWindowLights();
   sun.intensity=el>0?1.5+3.3*Math.min(1,el/35):0;
   sun.color.copy(el<20?mix(0xFF9A55,0xFFE2BC,el/20):mix(0xFFE2BC,0xFFF6EA,(el-20)/30));
   var hor=el<12?mix(0x3A4256,0xE8E4DC,(el+4)/16):mix(0xE8E4DC,0xEAE7E1,(el-12)/40), top=el<12?mix(0x1E2638,0xB9CCDA,(el+4)/16):mix(0xB9CCDA,0x9FBBD3,(el-12)/40);
@@ -634,6 +636,27 @@ function setSun(){
   if(typeof summarize==='function'&&document.getElementById('sum-sun'))summarize();
   renderer.shadowMap.needsUpdate=true; dirty=true;
 }
+// daylight from every window and garden door: a soft area light filling the opening, shining into its room and
+// following the sky (none at night). Rooms are lit from the side their light really comes from, as in the renders.
+// Phones and small machines skip it.
+var winLights=[], DAY=1;
+if(!LOWEND&&Q.get('win')!=='0')RectAreaLightUniformsLib.init();
+function makeWindowLights(){
+  winLights.forEach(function(l){scene.remove(l);}); winLights=[];
+  if(LOWEND||Q.get('win')==='0')return;
+  (SCENE.pieces||[]).forEach(function(p){
+    if((p.n!=='Window'&&p.n!=='Garden doors')||p.v)return;
+    var b=p.b, alongX=(b[3]-b[0])>(b[4]-b[1]), cx=(b[0]+b[3])/2, cy=(b[1]+b[4])/2, w=alongX?b[3]-b[0]:b[4]-b[1], h=b[5]-b[2];
+    var sides=[-1,1].filter(function(sg){ return !!roomAt(alongX?cx:cx+sg*70,alongX?cy+sg*70:cy); }); if(sides.length!==1)return;
+    var sg=sides[0], l=new T.RectAreaLight(0xF4F1EA,0,w*S*.96,h*S*.96);
+    l.position.copy(P(alongX?cx:cx+sg*8,alongX?cy+sg*8:cy,(b[2]+b[5])/2));
+    l.lookAt(P(alongX?cx:cx+sg*200,alongX?cy+sg*200:cy,(b[2]+b[5])/2-40));
+    scene.add(l); winLights.push(l);
+  });
+  setWindowLights();
+}
+function setWindowLights(){ var k=Q.get('wink')?+Q.get('wink'):2.2;
+  winLights.forEach(function(l){ l.intensity=(mode==='eye'?k:k*.5)*DAY; }); }
 var playing=false;
 [].forEach.call(document.querySelectorAll('#season button'),function(b){b.addEventListener('click',function(){
   state.season=b.getAttribute('data-v');
@@ -1008,7 +1031,7 @@ function setLayout(k){
   if(!ALL.layouts[k])return;
   LAYOUT=k; SCENE=ALL.layouts[k]; try{localStorage.setItem('azad-3d-layout',k);}catch(e){}
   if(!userSet.fu)setKey('fu',k==='existing'?'none':'all',false);
-  stopTour(); clearCard(); clearModel(); buildModel(); makeLabels(); syncLayoutUI(); applyState(); dirty=true;
+  stopTour(); clearCard(); clearModel(); buildModel(); makeWindowLights(); makeLabels(); syncLayoutUI(); applyState(); dirty=true;
 }
 function syncLayoutUI(){
   [].forEach.call(document.querySelectorAll('#layout button'),function(b){b.setAttribute('aria-pressed',b.getAttribute('data-v')===LAYOUT?'true':'false');});
@@ -1332,6 +1355,7 @@ vrBtn.addEventListener('click',function(){
     return renderer.xr.setSession(sess).then(vrStart);
   }).catch(function(e){ statusEl.hidden=false; statusEl.textContent='VR could not start: '+(e&&e.message||e); });
 });
+makeWindowLights();
 var p0=VIEWS.overview; camera.position.copy(P(p0.pos[0],p0.pos[1],p0.pos[2])); controls.target.copy(P(p0.look[0],p0.look[1],p0.look[2]));
 var h0=(location.hash||'').slice(1);
 setKey('fu',LAYOUT==='existing'?'none':'all',false);
