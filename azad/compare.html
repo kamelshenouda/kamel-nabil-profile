@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>AZAD plans side by side</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400..700&display=swap">
+<style>
+:root{--paper:#F2F1ED;--sheet:#FBFAF7;--ink:#1D2125;--muted:#666C71;--line:#D8D5CF;--accent:#2E5A74;--accent-ink:#fff;
+  --display:"Montserrat","Helvetica Neue",Arial,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--paper:#131517;--sheet:#1A1D20;--ink:#E8E6E1;--muted:#979DA2;--line:#34383C;--accent:#8DB6D1;--accent-ink:#0F1418}}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#131517;--sheet:#1A1D20;--ink:#E8E6E1;--muted:#979DA2;--line:#34383C;--accent:#8DB6D1;--accent-ink:#0F1418}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.4 var(--display);display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--sheet)}
+header a.back{font:600 12px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none}
+header h1{margin:0;font:500 18px var(--display);letter-spacing:-.01em;text-wrap:balance}
+header .sp{flex:1}
+label{display:inline-flex;align-items:center;gap:6px;font:600 12.5px var(--display);color:var(--muted)}
+select{font:600 13px var(--display);padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+input[type=checkbox]{accent-color:var(--accent)}
+main{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line)}
+.side{position:relative;min-width:0;min-height:0;background:var(--paper)}
+.side iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tag{position:absolute;left:12px;top:12px;z-index:2;background:var(--sheet);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font:600 12.5px var(--display);pointer-events:none}
+.side.lead .tag{border-color:var(--accent);color:var(--accent)}
+p.note{margin:0;color:var(--muted);font-size:12.5px;max-width:62ch}
+@media (max-width:760px){ main{grid-template-columns:1fr;grid-template-rows:1fr 1fr} header{padding:10px 16px} }
+</style>
+<header>
+  <a class="back" href="3d.html">← 3D</a>
+  <h1>Two plans, side by side</h1>
+  <span class="sp"></span>
+  <label>Left <select id="pa"></select></label>
+  <label>Right <select id="pb"></select></label>
+  <label><input type="checkbox" id="link" checked> Move together</label>
+  <p class="note">Walk or orbit in either view and the other follows, same spot and same time of day, so you can see what each plan does to the room.</p>
+</header>
+<main>
+  <div class="side" id="sa"><iframe id="fa" title="Left plan in 3D"></iframe><span class="tag" id="ta"></span></div>
+  <div class="side" id="sb"><iframe id="fb" title="Right plan in 3D"></iframe><span class="tag" id="tb"></span></div>
+</main>
+<script>
+(function(){
+  var PLANS=[['existing','As built'],['p1','Proposal 1'],['c','Rev 3.1 · open kitchen'],['d','Rev 4 · open plan']];
+  var Q=new URLSearchParams(location.search), A=Q.get('a')||'existing', B=Q.get('b')||'p1';
+  var fa=document.getElementById('fa'), fb=document.getElementById('fb'), pa=document.getElementById('pa'), pb=document.getElementById('pb'), link=document.getElementById('link');
+  [pa,pb].forEach(function(s,i){ PLANS.forEach(function(p){ var o=document.createElement('option'); o.value=p[0]; o.textContent=p[1]; s.appendChild(o); }); s.value=i?B:A; });
+  var lead=fa, last='';
+  function name(k){ return PLANS.filter(function(p){ return p[0]===k; })[0][1]; }
+  function api(f){ try{ var w=f.contentWindow; return w&&w.AZAD_READY&&w.AZAD3D; }catch(e){ return null; } }
+  function setLead(f){ lead=f; document.getElementById('sa').classList.toggle('lead',f===fa); document.getElementById('sb').classList.toggle('lead',f===fb); last=''; }
+  function hook(f){ f.addEventListener('load',function(){
+    var tries=0, t=setInterval(function(){ var w; try{ w=f.contentWindow; }catch(e){ clearInterval(t); return; }
+      if(w&&w.AZAD_READY){ clearInterval(t);
+        ['pointerdown','wheel','keydown','touchstart'].forEach(function(ev){ w.addEventListener(ev,function(){ setLead(f); },{capture:true,passive:true}); });
+        var other=f===fa?fb:fa, o=api(other); if(o&&w.AZAD3D)w.AZAD3D.setCam(o.camToken()); }
+      if(++tries>600)clearInterval(t); },200); }); }
+  function load(f,k){ f.src='3d.html?embed=1&plan='+encodeURIComponent(k); (f===fa?document.getElementById('ta'):document.getElementById('tb')).textContent=name(k); }
+  hook(fa); hook(fb); load(fa,A); load(fb,B); setLead(fa);
+  function url(){ try{ history.replaceState(null,'','?a='+pa.value+'&b='+pb.value); }catch(e){} }
+  pa.addEventListener('change',function(){ load(fa,pa.value); url(); });
+  pb.addEventListener('change',function(){ load(fb,pb.value); url(); });
+  (function tick(){
+    if(link.checked){ var L=api(lead), F=api(lead===fa?fb:fa);
+      if(L&&F){ var tok=L.camToken(); if(tok!==last){ last=tok; F.setCam(tok); } } }
+    requestAnimationFrame(tick); })();
+})();
+</script>
+
+</html>
