@@ -349,10 +349,6 @@ h3{font-weight:600}
   </div>
 </div>
 
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.8.3/build/index.module.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/postprocessing/GTAOPass.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/postprocessing/EffectComposer.js" crossorigin>
 <script type="importmap">
 {"imports":{
   "three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
@@ -361,7 +357,19 @@ h3{font-weight:600}
   "three-mesh-bvh":"https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.8.3/build/index.module.js"
 }}
 </script>
-<script>setTimeout(function(){var l=document.getElementById('loadmsg');if(l&&!window.AZAD_READY)l.textContent='The 3D library could not load. Check your connection and reload.';},20000);</script>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.8.3/build/index.module.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/postprocessing/GTAOPass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/postprocessing/EffectComposer.js" crossorigin>
+<script>
+// The import map must come before any module download (Safari and older Chrome ignore a later one), so the preloads
+// follow it. If the 3D code can't start, say why instead of waiting forever.
+window.AZAD_ERR='';
+window.addEventListener('error',function(e){ if(window.AZAD_READY||window.AZAD_ERR)return;
+  if(e instanceof ErrorEvent){ window.AZAD_ERR=e.message||'a script error'; return; }
+  var t=e&&e.target, u=t&&(t.src||(t.rel==='modulepreload'&&t.href)); if(u)window.AZAD_ERR='could not download '+u.replace(/^https:\/\/[^/]+\/npm\//,''); },true);
+setTimeout(function(){var l=document.getElementById('loadmsg');if(l&&!window.AZAD_READY)l.textContent='The 3D model could not start'+(window.AZAD_ERR?': '+window.AZAD_ERR:'')+'. Check your connection and reload; if it keeps happening, send me this message.';},20000);
+</script>
 <script type="module">
 // AZAD 3D walkthrough, studio renderer (1 Oct 2026). One model, built from the plan's centimetres, drawn in a few
 // dozen merged batches: physically based materials, soft sun shadows that only recompute when something changes,
