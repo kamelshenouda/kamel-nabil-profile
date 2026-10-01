@@ -128,6 +128,22 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .zoomui #zmeas svg{width:20px;height:20px}
 .mlbl{position:absolute;transform:translate(-50%,-50%);font:600 13px var(--mono);color:#fff;background:#2E5A74;padding:3px 8px;border-radius:4px;pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:3}
 .mlbl small{font-weight:500;opacity:.85;margin-left:6px}
+.fcat{display:grid;gap:10px}
+.fcat h3{margin:0;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fcat .items{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.fcat .items button{appearance:none;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);font:600 12px/1.25 var(--display);padding:6px 7px;border-radius:6px;cursor:pointer;text-align:left}
+.fcat .items button small{display:block;font:500 11px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.fcat .items button:focus-visible,.fbar button:focus-visible,.ftools button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fbar{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:max-content;max-width:calc(100% - 140px);box-sizing:border-box;
+  background:rgba(251,250,247,.96);color:#1D2125;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:8px 10px;font:500 12px/1.4 var(--mono)}
+.fbar b{font:600 13px var(--display)}
+.fbar .fx{flex-basis:100%;font-variant-numeric:tabular-nums}
+.fbar .warn{color:#9A5B12}.fbar .bad{color:#A13A2C;font-weight:600}.fbar .ok{color:#2F6B4F}
+.fbar button{appearance:none;border:1px solid rgba(29,33,37,.18);background:#fff;color:#1D2125;font:600 12px var(--display);padding:5px 9px;border-radius:6px;cursor:pointer}
+.fbar button.danger{color:#A13A2C}
+.ftools{display:flex;flex-wrap:wrap;gap:6px}
+.ftools button{appearance:none;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);font:600 12px var(--display);padding:6px 9px;border-radius:6px;cursor:pointer}
+.ftools button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .tourbtn{appearance:none;border:1px solid var(--accent);background:transparent;color:var(--accent);font:600 13px var(--display);padding:8px 10px;border-radius:6px;cursor:pointer;text-align:left}
 .tourbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .tourbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -138,6 +154,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
   .grip,.ptoggle{display:none}
   .status{left:12px;margin-right:62px;max-width:none}
   .minimap{width:128px;height:117px;top:52px}
+  .fbar{max-width:calc(100% - 80px);left:12px;transform:none;bottom:64px}
   .hud #hudhead{display:none}
   .panel h1{font-size:24px}
 }
@@ -195,6 +212,14 @@ h3{font-weight:600}
       <div class="seg"><span>Dimensions</span><div class="bt" data-state="dim"><button type="button" data-v="off" aria-pressed="true">Off</button><button type="button" data-v="on" aria-pressed="false" title="Room widths and lengths in metres, from the survey">On</button></div></div>
       <p class="hint" id="hint"></p>
     </div>
+    <details class="sec" id="sec-furnish">
+      <summary><span>Furnish</span><em id="sum-furnish">Place real-size pieces and check the walkways</em></summary>
+      <div class="grp">
+        <div class="ftools"><button type="button" id="fmode" aria-pressed="false">Start furnishing</button><button type="button" id="fcopy">Copy list</button><button type="button" id="fclear">Clear all</button></div>
+        <p class="hint" id="fhint">Pick a piece and it lands in the middle of your view. Drag it to move (5 cm steps), R to turn 90° (Shift+R 15°), Delete to remove. Gaps under 75 cm to walls and furniture are flagged. Each plan keeps its own layout; Copy list gives the positions to draw into the plan.</p>
+        <div class="fcat" id="fcat"></div>
+      </div>
+    </details>
     <details class="sec" id="sec-fin">
       <summary><span>Finishes &amp; doors</span><em id="sum-fin"></em></summary>
       <div class="grp">
@@ -243,6 +268,7 @@ h3{font-weight:600}
       <b>VR headset:</b> Enter VR puts you in the room at true scale; your own head height sets the eye level. Point a controller at the floor and pull the trigger to move there; push a thumbstick left or right to turn, forward or back to walk.<br>
       <b>What is it?</b> Click or tap any piece for its name, real size and finish, outlined in the model; click a floor for the room's size. Esc or × closes it.<br>
       <b>Tape measure:</b> the ruler button (or <kbd>M</kbd>), then click two points on any surface: floor, wall, worktop. The distance shows in metres, with the level and height parts when they differ. Esc clears.<br>
+      <b>Furnish:</b> place real-size pieces from the catalogue, drag them into place, R turns them; each piece shows its gap to the walls and furniture on every side, with walkways under 75 cm flagged. Saved per plan; Copy list hands the positions over.<br>
       <b>Plan:</b> standing, the small plan top right shows where you are and which way you face; click it to walk there.<br>
       <b>Tour:</b> Play the tour glides through every view of this layout and stops on any click or key.<br>
       <b>Standing:</b> drag to look around; zooming out widens the view. Double-click (or double-tap) the floor to walk there. Walking with the arrows, walls, glass and closed doors stop you and you slide along them.<br>
@@ -260,6 +286,7 @@ h3{font-weight:600}
     <div class="hud" id="hud" aria-live="off"><svg viewBox="-12 -12 24 24" aria-hidden="true"><circle r="11" class="hc"/><g id="hudn"><path d="M0 -9 L3.2 1 L0 -1 L-3.2 1 Z" class="hn"/><path d="M0 9 L3.2 -1 L0 1 L-3.2 -1 Z" class="hs"/></g></svg><span id="hudroom" hidden></span><span><b id="hudzoom">100%</b><span id="hudzl"> zoom</span></span><span id="hudhead">Facing SSE · 155°</span><span id="hudahead" hidden></span></div>
     <div class="aim" id="aim" hidden aria-hidden="true"></div>
     <canvas class="minimap" id="minimap" hidden tabindex="0" aria-label="Plan of the apartment showing where you stand and which way you face. Click a spot to walk there."></canvas>
+    <div class="fbar" id="fbar" hidden aria-live="polite"><b id="fbname"></b><button type="button" id="fbrot" title="Turn 90° (R)">↻ 90°</button><button type="button" id="fbdel" class="danger" title="Remove (Delete)">Remove</button><button type="button" id="fbdone">Done</button><span class="fx" id="fbinfo"></span></div>
     <div class="pcard" id="pcard" hidden aria-live="polite"><button type="button" class="px" id="pcardx" aria-label="Close">×</button><b id="pcardt"></b><span class="pl" id="pcardl"></span></div>
     <div class="zoomui" role="group" aria-label="Zoom">
       <button type="button" class="home" id="zhome" title="Stand at the main door at true size (H)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14.5V2.2l7-1v14.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8.3" cy="8.3" r=".9" fill="currentColor"/><path d="M1.5 14.5h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>At the door · 1:1</button>
@@ -851,6 +878,7 @@ function applyState(){
   built.forEach(function(o){ if(o.userData&&o.userData.edge)o.visible=o.userData.grpOn!==false&&o.userData.on; });
   caps.forEach(function(o){ o.visible=o.userData.grpOn!==false&&wallKind()==='glasswall'&&mode==='overview'; });
   stageFor(mode==='overview'); if(typeof setLights==='function'&&lxObjs.length)setLights();
+  if(typeof fSync==='function'&&typeof fObjs!=='undefined')fSync();
   UPPER.visible=state.up==='on';
   NEIGH.forEach(function(m){m.visible=state.up==='on';m.material=mode==='eye'?M.context:HIDDEN;m.renderOrder=mode==='eye'?0:-1;});
   document.getElementById('awrow').hidden=state.gs!=='awning';
@@ -1096,7 +1124,7 @@ window.addEventListener('blur',function(){keys={};});
 var colRay=new T.Raycaster(); colRay.firstHitOnly=true;
 function collide(mv){
   if(mode!=='eye')return mv;
-  var obs=solids.filter(function(o){return o.visible;});
+  var obs=solids.concat(typeof fsolids!=='undefined'?fsolids:[]).filter(function(o){return o.visible&&(!o.parent||o.parent.visible);});
   for(var pass=0;pass<2;pass++){
     var L=mv.length(); if(L<1e-6)return mv;
     var dir=mv.clone().normalize(), hitN=null;
@@ -1164,7 +1192,7 @@ function setLayout(k){
   if(!ALL.layouts[k])return;
   LAYOUT=k; SCENE=ALL.layouts[k]; try{localStorage.setItem('azad-3d-layout',k);}catch(e){}
   if(!userSet.fu)setKey('fu',k==='existing'?'none':'all',false);
-  stopTour(); clearCard(); clearModel(); buildModel(); makeWindowLights(); makeLighting(); makeLabels(); syncLayoutUI(); applyState(); dirty=true;
+  stopTour(); clearCard(); fSel=null; clearModel(); buildModel(); makeWindowLights(); makeLighting(); makeLabels(); syncLayoutUI(); applyState(); dirty=true;
 }
 function syncLayoutUI(){
   [].forEach.call(document.querySelectorAll('#layout button'),function(b){b.setAttribute('aria-pressed',b.getAttribute('data-v')===LAYOUT?'true':'false');});
@@ -1311,6 +1339,7 @@ renderer.domElement.addEventListener('pointerup',function(e){
   if(moved>6||held>450||e.button>0)return;
   var cx=e.clientX, cy=e.clientY; clearTimeout(clickTimer);
   if(measuring){ measureAt(cx,cy); return; }
+  if(fOn)return;
   clickTimer=setTimeout(function(){ pickAt(cx,cy); },mode==='eye'?260:0);   // standing, wait to see if it's a double-click to walk
 });
 document.getElementById('pcardx').addEventListener('click',clearCard);
@@ -1345,6 +1374,176 @@ function drawMeasures(){ var W=stage.clientWidth,H=stage.clientHeight,v=new T.Ve
   measures.forEach(function(q){ v.copy(q.mid).project(camera); var vis=v.z<1&&Math.abs(v.x)<1.05&&Math.abs(v.y)<1.05; q.el.hidden=!vis;
     if(vis){ q.el.style.left=((v.x+1)/2*W)+'px'; q.el.style.top=((1-v.y)/2*H)+'px'; } }); }
 measBtn.addEventListener('click',function(){ setMeasuring(!measuring); });
+
+
+// ---------- furnishing: place real-size pieces, drag and turn them, and see the gap on every side. The layout is
+// kept per plan in this artifact's store when the page runs inside Claude (only the owner and editors write; Claude
+// reads it back to draw pieces into the plan), otherwise in this browser. Copy list hands over the positions as text.
+var FCAT=[
+  ['Living',[['sofa3','Sofa, 3 seats',220,95,80],['sofa2','Sofa, 2 seats',170,90,80],['corner','Corner sofa',280,200,80],['arm','Armchair',85,85,80],
+    ['coffee','Coffee table',120,60,40],['coffeeR','Round coffee table',90,90,40],['side','Side table',45,45,50],['tvunit','TV unit',200,45,50],
+    ['rugL','Rug',300,200,1.5],['rugM','Rug',230,160,1.5],['flamp','Floor lamp',40,40,160],['books','Bookcase',90,35,200]]],
+  ['Dining',[['dt6','Dining table, 6',180,90,75],['dt8','Dining table, 8',240,100,75],['dtR','Round table',120,120,75],['dchair','Dining chair',45,52,85],['sideboard','Sideboard',180,45,80]]],
+  ['Bedroom',[['bedK','King bed',195,215,110],['bedD','Double bed',175,215,110],['bedS','Single bed',100,210,90],['night','Bedside table',50,40,55],
+    ['ward1','Wardrobe',100,60,240],['ward2','Wardrobe',200,60,240],['dresser','Dresser',120,50,80],['cot','Cot',75,140,90]]],
+  ['Work and play',[['desk','Desk',140,70,75],['ochair','Office chair',60,60,100],['kdesk','Kids desk',100,55,65],['toys','Toy storage',80,40,80]]],
+  ['Garden',[['lounger','Lounger',200,70,35],['otable','Outdoor table',160,90,74]]]
+];
+var FDEF={}; FCAT.forEach(function(c){ c[1].forEach(function(d){ FDEF[d[0]]={t:d[0],n:d[1],w:d[2],d:d[3],h:d[4],cat:c[0]}; }); });
+var furn={}, fObjs={}, fSel=null, fOn=false, fDrag=null, fStore=null, fCanWrite=true, fSaveT=null, fSaving=false, fDirtySave=false, fsolids=[];
+var fbar=document.getElementById('fbar'), fbname=document.getElementById('fbname'), fbinfo=document.getElementById('fbinfo');
+function fList(){ return (furn[LAYOUT]=furn[LAYOUT]||[]); }
+function fBox(w,d,h,y0,mat,x,z){ var r=Math.min(1.5,Math.min(w,d,h)*.3), g=new T.Mesh(FX.bevel&&Math.min(w,d,h)>3?new RoundedBoxGeometry(w*S,h*S,d*S,2,r*S):new T.BoxGeometry(w*S,h*S,d*S),mat);
+  g.position.set((x||0)*S,(y0+h/2)*S,(z||0)*S); g.castShadow=true; g.receiveShadow=true; return g; }
+function fCyl(r,h,y0,mat,x,z){ var g=new T.Mesh(new T.CylinderGeometry(r*S,r*S,h*S,32),mat); g.position.set((x||0)*S,(y0+h/2)*S,(z||0)*S); g.castShadow=true; return g; }
+function fBuild(t){ // a simple model of each catalogue piece at its true size, centred on its footprint; its back is towards plan -y
+  var D=FDEF[t], w=D.w, d=D.d, h=D.h, G=new T.Group(), A=function(m){G.add(m);};
+  var legs=function(lh,mat,inset,lw){ [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){ A(fBox(lw||5,lw||5,lh,0,mat,q[0]*(w/2-inset),q[1]*(d/2-inset))); }); };
+  if(/^sofa|^arm/.test(t)){ A(fBox(w,d,42,0,M.fabric)); A(fBox(w,18,38,42,M.fabric,0,-(d/2-9))); A(fBox(16,d,20,42,M.fabric,-(w/2-8),0)); A(fBox(16,d,20,42,M.fabric,w/2-8,0)); }
+  else if(t==='corner'){ A(fBox(w,95,42,0,M.fabric,0,-(d/2-47.5))); A(fBox(95,d-95,42,0,M.fabric,-(w/2-47.5),47.5)); A(fBox(w,18,38,42,M.fabric,0,-(d/2-9))); A(fBox(18,d,38,42,M.fabric,-(w/2-9),0)); }
+  else if(t==='coffee'||t==='sideboard'||t==='tvunit'||t==='dresser'||t==='toys'||t==='night'||t==='books'||/^ward/.test(t)){ A(fBox(w,d,h,0,M.oak)); }
+  else if(t==='coffeeR'||t==='side'){ A(fCyl(w/2,4,h-4,M.oak)); A(fCyl(5,h-4,0,M.oakdark)); }
+  else if(/^rug/.test(t)){ A(fBox(w,d,1.5,0,M.rug)); }
+  else if(t==='flamp'){ A(fCyl(14,2,0,M.black)); A(fCyl(1.2,130,0,M.black)); A(fCyl(20,28,130,M.lamp)); }
+  else if(t==='dtR'){ A(fCyl(w/2,4,h-4,M.oak)); A(fCyl(7,h-4,0,M.oakdark)); }
+  else if(/^dt|otable|desk|kdesk/.test(t)){ A(fBox(w,d,4,h-4,M.oak)); legs(h-4,M.oakdark,8,6); }
+  else if(t==='dchair'||t==='ochair'){ A(fBox(w,d-6,6,42,M.linen,0,3)); A(fBox(w,6,h-48,48,M.linen,0,-(d/2-3))); legs(42,t==='ochair'?M.black:M.oak,4,4); }
+  else if(/^bed/.test(t)){ A(fBox(w,d,30,0,M.oak)); A(fBox(w-10,d-20,22,30,M.linen,0,6)); A(fBox(w,8,h,0,M.oak,0,-(d/2-4)));
+    var n=w>=150?2:1, pw=n===2?(w-30)/2:w-30; for(var i=0;i<n;i++)A(fBox(pw,45,14,52,M.linen,n===2?(i?1:-1)*(pw/2+5):0,-(d/2-38))); A(fBox(w-8,d*.55,4,52,M.fabric,0,d*.2)); }
+  else if(t==='cot'){ A(fBox(w,d,15,25,M.linen)); A(fBox(w,4,90,0,M.oak,0,-(d/2-2))); A(fBox(w,4,90,0,M.oak,0,d/2-2)); A(fBox(4,d,90,0,M.oak,-(w/2-2),0)); A(fBox(4,d,90,0,M.oak,w/2-2,0)); }
+  else if(t==='lounger'){ A(fBox(w,d,30,5,M.fabric)); legs(5,M.black,6,4); }
+  else A(fBox(w,d,h,0,M.white));
+  return G;
+}
+function fPlace(p){ var o=fObjs[p.id]; if(!o){ o=fBuild(p.t); o.userData={fid:p.id}; scene.add(o); fObjs[p.id]=o; }
+  o.position.set(p.x*S,0,p.y*S); o.rotation.y=-p.r*Math.PI/180; o.visible=state.fu==='all'; }
+function fSync(){ var keep={};
+  fList().forEach(function(p){ keep[p.id]=1; fPlace(p); });
+  Object.keys(fObjs).forEach(function(id){ if(!keep[id]){ scene.remove(fObjs[id]); fObjs[id].traverse(function(o){if(o.geometry)o.geometry.dispose();}); delete fObjs[id]; } });
+  fsolids=[]; Object.keys(fObjs).forEach(function(id){ fObjs[id].traverse(function(o){ if(o.isMesh)fsolids.push(o); }); });
+  renderer.shadowMap.needsUpdate=true; dirty=true; fInfo();
+  var n=fList().length; document.getElementById('sum-furnish').textContent=n?n+' piece'+(n>1?'s':'')+' placed on this plan':'Place real-size pieces and check the walkways';
+}
+function fFoot(p){ var D=FDEF[p.t], a=p.r*Math.PI/180, c=Math.abs(Math.cos(a)), s=Math.abs(Math.sin(a)), hw=(D.w*c+D.d*s)/2, hd=(D.w*s+D.d*c)/2;
+  return [p.x-hw,p.y-hd,0,p.x+hw,p.y+hd,D.h]; }
+function fObstacles(self){
+  var out=(SCENE.pieces||[]).filter(function(q){ return pieceShown(q)&&q.b[2]<100&&!/^(Window|Door|Front door|Hidden door|Etched-glass sliding door|Rug|Pergola)$/.test(q.n); }).map(function(q){ return {n:q.n,b:q.b}; });
+  fList().forEach(function(q){ if(q!==self&&!/^rug/.test(q.t))out.push({n:FDEF[q.t].n,b:fFoot(q)}); });
+  return out;
+}
+function fGaps(p){
+  var b=fFoot(p), rug=/^rug/.test(p.t), over=[], g={left:[1e9,''],right:[1e9,''],top:[1e9,''],bottom:[1e9,'']};
+  fObstacles(p).forEach(function(o){ var q=o.b, ox=q[0]<b[3]&&q[3]>b[0], oy=q[1]<b[4]&&q[4]>b[1];
+    if(ox&&oy){ if(!rug&&q[2]<b[5]&&q[5]>b[2]+.5&&over.indexOf(o.n)<0)over.push(o.n); return; }
+    if(oy){ if(q[3]<=b[0]&&b[0]-q[3]<g.left[0])g.left=[b[0]-q[3],o.n]; if(q[0]>=b[3]&&q[0]-b[3]<g.right[0])g.right=[q[0]-b[3],o.n]; }
+    if(ox){ if(q[4]<=b[1]&&b[1]-q[4]<g.top[0])g.top=[b[1]-q[4],o.n]; if(q[1]>=b[4]&&q[1]-b[4]<g.bottom[0])g.bottom=[q[1]-b[4],o.n]; } });
+  return {over:over,g:g};
+}
+function fEsc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function fInfo(){
+  if(!fSel||!fOn){ fbar.hidden=true; return; }
+  var p=fList().filter(function(q){return q.id===fSel;})[0]; if(!p){ fbar.hidden=true; return; }
+  var D=FDEF[p.t], r=fGaps(p), rm=roomAt(p.x,p.y), parts=[];
+  fbname.textContent=D.n+' · '+D.w+' × '+D.d+' cm'+(p.r?' · turned '+p.r+'°':'')+(rm?' · '+rm.n:'');
+  if(r.over.length)parts.push('<span class="bad">Overlaps '+fEsc(r.over.slice(0,2).join(' and '))+'</span>');
+  [['left','left'],['right','right'],['top','garden side'],['bottom','entrance side']].forEach(function(k){
+    var v=r.g[k[0]]; if(v[0]>400)return; var cm=Math.round(v[0]), cls=cm<=15?'':cm<75?'warn':'ok';
+    parts.push('<span class="'+cls+'">'+k[1]+': '+(cm<=1?'against ':cm+' cm to ')+fEsc(v[1])+(cls==='warn'?' (under 75)':'')+'</span>'); });
+  fbinfo.innerHTML=parts.join(' · ')||'Clear all round.';
+  fbar.hidden=false;
+  if(window.innerWidth>760){ fbar.style.left=(panelCover()+12)+'px'; fbar.style.right='64px'; fbar.style.transform='none'; fbar.style.width='auto'; fbar.style.maxWidth='none'; }
+}
+function fSave(){ // this browser at once; the artifact's store a moment after the last change, one write at a time
+  try{ localStorage.setItem('azad-3d-furnish',JSON.stringify(furn)); }catch(e){}
+  if(!fStore||!fCanWrite)return;
+  var L=LAYOUT; clearTimeout(fSaveT); fSaveT=setTimeout(function go(){
+    if(fSaving){ fDirtySave=true; return; } fSaving=true;
+    fStore.doc('furnish/'+L).set({pieces:JSON.parse(JSON.stringify(furn[L]||[])),layout:L,updated:new Date().toISOString()})
+      .catch(function(e){ if(e&&e.code==='invalid_argument'){ fCanWrite=false; document.getElementById('fhint').textContent='You can see the saved layout; only the owner and editors can change it. Your changes stay in this browser.'; } })
+      .then(function(){ fSaving=false; if(fDirtySave){ fDirtySave=false; go(); } });
+  },700);
+}
+function fAdd(t){
+  var c=controls.target, p={id:t+'-'+Date.now().toString(36),t:t,x:Math.round(c.x/S/5)*5,y:Math.round(c.z/S/5)*5,r:0};
+  if(mode==='eye'){ var dir=c.clone().sub(camera.position); dir.y=0; dir.normalize(); p.x=Math.round((camera.position.x/S+dir.x*150)/5)*5; p.y=Math.round((camera.position.z/S+dir.z*150)/5)*5; }
+  // the nearest clear spot inside a room: rings of 25 cm out to 3 m, eight directions each
+  var x0=p.x, y0=p.y, found=false;
+  for(var rr=0;rr<=300&&!found;rr+=25){ for(var k=0;k<(rr?8:1)&&!found;k++){ var a=k*Math.PI/4;
+    p.x=Math.round((x0+Math.cos(a)*rr)/5)*5; p.y=Math.round((y0+Math.sin(a)*rr)/5)*5;
+    var rm=roomAt(p.x,p.y), fb=fFoot(p); if(!rm||fb[0]<rm.r[0]||fb[3]>rm.r[2]||fb[1]<rm.r[1]||fb[4]>rm.r[3])continue;
+    if(!fGaps(p).over.length)found=true; } }
+  if(!found){ p.x=x0; p.y=y0; }
+  fList().push(p); fSel=p.id; if(state.fu!=='all'){ setKey('fu','all',true); applyState(); } fSync(); fSave();
+}
+function fFind(o){ while(o&&!(o.userData&&o.userData.fid))o=o.parent; return o&&o.userData.fid; }
+function fRotate(deg){ var p=fList().filter(function(q){return q.id===fSel;})[0]; if(!p)return; p.r=((p.r+deg)%360+360)%360; fSync(); fSave(); }
+function fRemove(){ furn[LAYOUT]=fList().filter(function(q){return q.id!==fSel;}); fSel=null; fSync(); fSave(); }
+function setFurnish(on){
+  fOn=on; var b=document.getElementById('fmode'); b.setAttribute('aria-pressed',on?'true':'false'); b.textContent=on?'Stop furnishing':'Start furnishing';
+  if(on){ clearCard(); stopTour(); if(measuring)setMeasuring(false); document.getElementById('sec-furnish').open=true;
+    if(state.fu!=='all'){ setKey('fu','all',true); applyState(); }
+    var rm=mode==='eye'?roomAt(camera.position.x/S,camera.position.z/S):null, cx=rm?(rm.r[0]+rm.r[2])/2:900, cy=rm?(rm.r[1]+rm.r[3])/2:950, span=rm?Math.max(rm.r[2]-rm.r[0],rm.r[3]-rm.r[1]):1800;
+    goto('overview'); if(anim){ anim.toT=P(cx,cy,0); anim.toP=P(cx,cy+span*.3,Math.max(700,span*1.3)); }
+    statusEl.hidden=false; statusEl.textContent='Furnishing: pick a piece in the panel, drag it into place, R to turn it.';
+  } else { fSel=null; }
+  fInfo(); renderer.domElement.style.cursor='';
+}
+(function(){ var host=document.getElementById('fcat');
+  FCAT.forEach(function(c){ var sec=document.createElement('div'), h=document.createElement('h3'), it=document.createElement('div'); h.textContent=c[0]; it.className='items';
+    c[1].forEach(function(d){ var b=document.createElement('button'); b.type='button'; b.textContent=d[1]; var sm=document.createElement('small'); sm.textContent=d[2]+' × '+d[3]+(d[4]>2?' × '+d[4]:'')+' cm'; b.appendChild(sm);
+      b.addEventListener('click',function(){ if(!fOn)setFurnish(true); fAdd(d[0]); }); it.appendChild(b); });
+    sec.appendChild(h); sec.appendChild(it); host.appendChild(sec); }); })();
+document.getElementById('fmode').addEventListener('click',function(){ setFurnish(!fOn); });
+document.getElementById('fbrot').addEventListener('click',function(){ fRotate(90); });
+document.getElementById('fbdel').addEventListener('click',fRemove);
+document.getElementById('fbdone').addEventListener('click',function(){ fSel=null; fInfo(); });
+var fclearArmed=false;
+document.getElementById('fclear').addEventListener('click',function(){ var b=this;
+  if(!fclearArmed){ fclearArmed=true; b.textContent='Click again to clear'; setTimeout(function(){ fclearArmed=false; b.textContent='Clear all'; },3000); return; }
+  fclearArmed=false; b.textContent='Clear all'; furn[LAYOUT]=[]; fSel=null; fSync(); fSave(); });
+document.getElementById('fcopy').addEventListener('click',function(){
+  var lines=['AZAD furniture · '+SCENE.name+' · plan cm (x to the right, y down the plan), centre of each piece'].concat(fList().map(function(p){ var D=FDEF[p.t], rm=roomAt(p.x,p.y);
+    return D.n+' '+D.w+'×'+D.d+(D.h>2?'×'+D.h:'')+' cm at ('+p.x+', '+p.y+'), turned '+p.r+'°'+(rm?', '+rm.n:''); }));
+  var txt=lines.join('\n'), b=this;
+  function done(ok){ b.textContent=ok?'Copied':'Copy the text below'; setTimeout(function(){ b.textContent='Copy list'; },2500);
+    if(!ok){ var ta=document.getElementById('fcopyta'); if(!ta){ ta=document.createElement('textarea'); ta.id='fcopyta'; ta.rows=6; ta.style.width='100%'; b.parentNode.parentNode.appendChild(ta); } ta.value=txt; ta.select(); } }
+  try{ navigator.clipboard.writeText(txt).then(function(){done(true);},function(){done(false);}); }catch(e){ done(false); }
+});
+// pointer: grab a placed piece and slide it across the floor in 5 cm steps; the camera stays put while you drag
+var floorPlane=new T.Plane(new T.Vector3(0,1,0),0), fRay=new T.Raycaster();
+function fNdc(e){ var r=renderer.domElement.getBoundingClientRect(); ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1); fRay.setFromCamera(ndc,camera); }
+function fFloorAt(e){ fNdc(e); var v=new T.Vector3(); return fRay.ray.intersectPlane(floorPlane,v)?v:null; }
+renderer.domElement.addEventListener('pointerdown',function(e){
+  if(!fOn||e.button>0)return;
+  fNdc(e); var h=fRay.intersectObjects(fsolids.filter(function(o){return o.parent.visible;}),false)[0], id=h&&fFind(h.object);
+  if(!id){ fSel=null; fInfo(); return; }
+  e.stopImmediatePropagation(); e.preventDefault(); fSel=id;
+  var p=fList().filter(function(q){return q.id===id;})[0], f=fFloorAt(e); fDrag={p:p,dx:f?p.x-f.x/S:0,dy:f?p.y-f.z/S:0};
+  controls.enabled=false; try{ renderer.domElement.setPointerCapture(e.pointerId); }catch(er){} fInfo();
+},{capture:true});
+renderer.domElement.addEventListener('pointermove',function(e){
+  if(!fOn)return;
+  if(!fDrag){ fNdc(e); renderer.domElement.style.cursor=fRay.intersectObjects(fsolids,false).length?'grab':''; return; }
+  var f=fFloorAt(e); if(!f)return; fDrag.p.x=Math.round((f.x/S+fDrag.dx)/5)*5; fDrag.p.y=Math.round((f.z/S+fDrag.dy)/5)*5; fPlace(fDrag.p); fInfo(); dirty=true;
+});
+renderer.domElement.addEventListener('pointerup',function(){ if(!fDrag)return; fDrag=null; controls.enabled=true; fSync(); fSave(); });
+window.addEventListener('keydown',function(e){
+  if(!fOn||!fSel||/input|textarea|select/i.test(e.target.tagName))return;
+  if(e.key==='r'||e.key==='R'){ fRotate(e.shiftKey?15:90); e.preventDefault(); e.stopImmediatePropagation(); }
+  else if(e.key==='Delete'||e.key==='Backspace'){ fRemove(); e.preventDefault(); e.stopImmediatePropagation(); }
+},{capture:true});
+// load: this browser's copy first, then the artifact's store (live) when the page runs inside Claude
+try{ var fl=JSON.parse(localStorage.getItem('azad-3d-furnish')||'null'); if(fl&&typeof fl==='object'&&!Array.isArray(fl))furn=fl; }catch(e){}
+fSync();
+if(window.claude&&window.claude.use){
+  window.claude.use('user').then(function(u){ if(u&&u.can)Promise.resolve(u.can('data.write')).then(function(c){ if(c===false)fCanWrite=false; }); }).catch(function(){});
+  window.claude.use('db').then(function(db){ if(!db)return; fStore=db;
+    ['existing','p1','c','d'].forEach(function(L){ db.doc('furnish/'+L).onSnapshot(function(sn){
+      if(!sn.exists||sn.metadata.hasPendingWrites)return; var d=sn.data(); if(!d||!Array.isArray(d.pieces))return;
+      if(fDrag&&L===LAYOUT)return; furn[L]=JSON.parse(JSON.stringify(d.pieces)).filter(function(q){ return q&&FDEF[q.t]&&isFinite(q.x)&&isFinite(q.y); });
+      if(L===LAYOUT)fSync(); }, function(){}); });
+  }).catch(function(){});
+}
 
 // ---------- the plan, top right while you stand: where you are and which way you face. Click a spot to walk there.
 var mm=document.getElementById('minimap'), mmCtx=mm.getContext('2d'), mmBase=document.createElement('canvas'), mmKey='', MMB=[-40,-40,1830,1673];
