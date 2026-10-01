@@ -141,6 +141,12 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 .fbar .warn{color:#9A5B12}.fbar .bad{color:#A13A2C;font-weight:600}.fbar .ok{color:#2F6B4F}
 .fbar button{appearance:none;border:1px solid rgba(29,33,37,.18);background:#fff;color:#1D2125;font:600 12px var(--display);padding:5px 9px;border-radius:6px;cursor:pointer}
 .fbar button.danger{color:#A13A2C}
+.fbar button:disabled{opacity:.4;cursor:default}
+.fbar .fsz{display:inline-flex;align-items:center;gap:4px;font:600 11px var(--mono);color:#4A4F54}
+.fbar .fsz input{width:58px;font:600 12px var(--mono);padding:4px 5px;border:1px solid rgba(29,33,37,.18);border-radius:6px;background:#fff;color:#1D2125;font-variant-numeric:tabular-nums}
+.fbar .fszu{font:500 11px var(--mono);color:#666C71;margin-right:4px}
+.ftools button:disabled{opacity:.45;cursor:default}
+.mlbl.fdl{font-size:12px;padding:2px 7px;background:#2E5A74}.mlbl.fdl.warn{background:#9A5B12}
 .ftools{display:flex;flex-wrap:wrap;gap:6px}
 .ftools button{appearance:none;border:1px solid var(--btn-line);background:var(--btn);color:var(--ink);font:600 12px var(--display);padding:6px 9px;border-radius:6px;cursor:pointer}
 .ftools button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -304,9 +310,9 @@ h3{font-weight:600}
     </section>
 
     <section class="tabp" id="tab-furnish" role="tabpanel" aria-labelledby="tb-furnish" hidden>
-      <div class="ftools"><button type="button" id="fmode" aria-pressed="false">Start furnishing</button><button type="button" id="fcopy">Copy list</button><button type="button" id="fclear">Clear all</button></div>
+      <div class="ftools"><button type="button" id="fmode" aria-pressed="false">Start furnishing</button><button type="button" id="fcopy">Copy list</button><button type="button" id="fclear">Clear all</button><button type="button" id="fundo" disabled title="Undo (Ctrl+Z, ⌘Z on a Mac)">↶ Undo</button><button type="button" id="fredo" disabled title="Redo (Shift+Ctrl+Z, ⇧⌘Z)">↷ Redo</button></div>
       <p class="hint" id="sum-furnish">Place real-size pieces and check the walkways</p>
-      <p class="hint" id="fhint">Pick a piece and it lands on a clear spot near the middle of your view. Drag to move (5 cm steps), <kbd>R</kbd> turns it 90° (<kbd>Shift</kbd>+<kbd>R</kbd> 15°), <kbd>Delete</kbd> removes it. Gaps under 75 cm are flagged. Each plan keeps its own layout.</p>
+      <p class="hint" id="fhint">Pick a piece and it lands on a clear spot near the middle of your view. Drag to move (5 cm steps); a face within 8 cm of a wall or piece closes up against it (hold <kbd>Alt</kbd> to place freely). The arrows nudge it 5 cm (<kbd>Shift</kbd> 1 cm), <kbd>R</kbd> turns it 90° (<kbd>Shift</kbd>+<kbd>R</kbd> 15°), <kbd>Delete</kbd> removes it, <kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>⌘Z</kbd>) undoes. Type a width and depth to size it. Lines show the gap on each side; under 75 cm turns amber. Each plan keeps its own layout.</p>
       <div class="fcat" id="fcat"></div>
     </section>
 
@@ -342,7 +348,7 @@ h3{font-weight:600}
     <div class="aim" id="aim" hidden aria-hidden="true"></div>
     <canvas class="minimap" id="minimap" hidden tabindex="0" aria-label="Plan of the apartment showing where you stand and which way you face. Click a spot to walk there."></canvas>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <div class="fbar" id="fbar" hidden aria-live="polite"><b id="fbname"></b><button type="button" id="fbrot" title="Turn 90° (R)">↻ 90°</button><button type="button" id="fbdel" class="danger" title="Remove (Delete)">Remove</button><button type="button" id="fbdone">Done</button><span class="fx" id="fbinfo"></span></div>
+    <div class="fbar" id="fbar" hidden aria-live="polite"><b id="fbname"></b><label class="fsz">W <input type="number" id="fbw" min="20" max="500" step="1" inputmode="numeric"></label><label class="fsz">D <input type="number" id="fbd" min="20" max="500" step="1" inputmode="numeric"></label><span class="fszu">cm</span><button type="button" id="fbrot" title="Turn 90° (R)">↻ 90°</button><button type="button" id="fbdel" class="danger" title="Remove (Delete)">Remove</button><button type="button" id="fbundo" disabled title="Undo (Ctrl+Z, ⌘Z on a Mac)">↶</button><button type="button" id="fbdone">Done</button><span class="fx" id="fbinfo"></span></div>
     <div class="pcard" id="pcard" hidden aria-live="polite"><button type="button" class="px" id="pcardx" aria-label="Close">×</button><b id="pcardt"></b><span class="pl" id="pcardl"></span></div>
     <div class="zoomui" role="group" aria-label="Zoom">
       <button type="button" class="home" id="zhome" title="Stand at the main door at true size (H)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14.5V2.2l7-1v14.3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8.3" cy="8.3" r=".9" fill="currentColor"/><path d="M1.5 14.5h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>At the door · 1:1</button>
@@ -1493,11 +1499,13 @@ var FDEF={}; FCAT.forEach(function(c){ c[1].forEach(function(d){ FDEF[d[0]]={t:d
 var furn={}, fObjs={}, fSel=null, fOn=false, fDrag=null, fStore=null, fCanWrite=true, fSaveT=null, fSaving=false, fDirtySave=false, fsolids=[];
 var fbar=document.getElementById('fbar'), fbname=document.getElementById('fbname'), fbinfo=document.getElementById('fbinfo');
 function fList(){ return (furn[LAYOUT]=furn[LAYOUT]||[]); }
+function fDim(p){ var D=FDEF[p.t]; return {w:p.w||D.w,d:p.d||D.d,h:D.h,n:D.n}; }
+function fGet(){ return fList().filter(function(q){return q.id===fSel;})[0]; }
 function fBox(w,d,h,y0,mat,x,z){ var r=Math.min(1.5,Math.min(w,d,h)*.3), g=new T.Mesh(FX.bevel&&Math.min(w,d,h)>3?new RoundedBoxGeometry(w*S,h*S,d*S,2,r*S):new T.BoxGeometry(w*S,h*S,d*S),mat);
   g.position.set((x||0)*S,(y0+h/2)*S,(z||0)*S); g.castShadow=true; g.receiveShadow=true; return g; }
 function fCyl(r,h,y0,mat,x,z){ var g=new T.Mesh(new T.CylinderGeometry(r*S,r*S,h*S,32),mat); g.position.set((x||0)*S,(y0+h/2)*S,(z||0)*S); g.castShadow=true; return g; }
-function fBuild(t){ // a simple model of each catalogue piece at its true size, centred on its footprint; its back is towards plan -y
-  var D=FDEF[t], w=D.w, d=D.d, h=D.h, G=new T.Group(), A=function(m){G.add(m);};
+function fBuild(p){ // a simple model of each catalogue piece at its true size, centred on its footprint; its back is towards plan -y
+  var t=p.t, D=fDim(p), w=D.w, d=D.d, h=D.h, G=new T.Group(), A=function(m){G.add(m);};
   var legs=function(lh,mat,inset,lw){ [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){ A(fBox(lw||5,lw||5,lh,0,mat,q[0]*(w/2-inset),q[1]*(d/2-inset))); }); };
   if(/^sofa|^arm/.test(t)){ A(fBox(w,d,42,0,M.fabric)); A(fBox(w,18,38,42,M.fabric,0,-(d/2-9))); A(fBox(16,d,20,42,M.fabric,-(w/2-8),0)); A(fBox(16,d,20,42,M.fabric,w/2-8,0)); }
   else if(t==='corner'){ A(fBox(w,95,42,0,M.fabric,0,-(d/2-47.5))); A(fBox(95,d-95,42,0,M.fabric,-(w/2-47.5),47.5)); A(fBox(w,18,38,42,M.fabric,0,-(d/2-9))); A(fBox(18,d,38,42,M.fabric,-(w/2-9),0)); }
@@ -1515,36 +1523,41 @@ function fBuild(t){ // a simple model of each catalogue piece at its true size, 
   else A(fBox(w,d,h,0,M.white));
   return G;
 }
-function fPlace(p){ var o=fObjs[p.id]; if(!o){ o=fBuild(p.t); o.userData={fid:p.id}; scene.add(o); fObjs[p.id]=o; }
+function fPlace(p){ var o=fObjs[p.id], D=fDim(p), key=p.t+'|'+D.w+'|'+D.d;
+  if(o&&o.userData.key!==key){ scene.remove(o); o.traverse(function(m){if(m.geometry)m.geometry.dispose();}); o=null; }
+  if(!o){ o=fBuild(p); o.userData={fid:p.id,key:key}; scene.add(o); fObjs[p.id]=o; }
   o.position.set(p.x*S,0,p.y*S); o.rotation.y=-p.r*Math.PI/180; o.visible=state.fu==='all'; }
 function fSync(){ var keep={};
   fList().forEach(function(p){ keep[p.id]=1; fPlace(p); });
   Object.keys(fObjs).forEach(function(id){ if(!keep[id]){ scene.remove(fObjs[id]); fObjs[id].traverse(function(o){if(o.geometry)o.geometry.dispose();}); delete fObjs[id]; } });
   fsolids=[]; Object.keys(fObjs).forEach(function(id){ fObjs[id].traverse(function(o){ if(o.isMesh)fsolids.push(o); }); });
-  renderer.shadowMap.needsUpdate=true; dirty=true; fInfo();
+  renderer.shadowMap.needsUpdate=true; dirty=true; fInfo(); fUndoUI();
   var n=fList().length; document.getElementById('sum-furnish').textContent=n?n+' piece'+(n>1?'s':'')+' placed on this plan':'Place real-size pieces and check the walkways';
 }
-function fFoot(p){ var D=FDEF[p.t], a=p.r*Math.PI/180, c=Math.abs(Math.cos(a)), s=Math.abs(Math.sin(a)), hw=(D.w*c+D.d*s)/2, hd=(D.w*s+D.d*c)/2;
+function fFoot(p){ var D=fDim(p), a=p.r*Math.PI/180, c=Math.abs(Math.cos(a)), s=Math.abs(Math.sin(a)), hw=(D.w*c+D.d*s)/2, hd=(D.w*s+D.d*c)/2;
   return [p.x-hw,p.y-hd,0,p.x+hw,p.y+hd,D.h]; }
 function fObstacles(self){
   var out=(SCENE.pieces||[]).filter(function(q){ return pieceShown(q)&&q.b[2]<100&&!/^(Window|Door|Front door|Hidden door|Etched-glass sliding door|Rug|Pergola)$/.test(q.n); }).map(function(q){ return {n:q.n,b:q.b}; });
-  fList().forEach(function(q){ if(q!==self&&!/^rug/.test(q.t))out.push({n:FDEF[q.t].n,b:fFoot(q)}); });
+  fList().forEach(function(q){ if(q!==self&&!/^rug/.test(q.t))out.push({n:fDim(q).n,b:fFoot(q)}); });
   return out;
 }
 function fGaps(p){
   var b=fFoot(p), rug=/^rug/.test(p.t), over=[], g={left:[1e9,''],right:[1e9,''],top:[1e9,''],bottom:[1e9,'']};
   fObstacles(p).forEach(function(o){ var q=o.b, ox=q[0]<b[3]&&q[3]>b[0], oy=q[1]<b[4]&&q[4]>b[1];
     if(ox&&oy){ if(!rug&&q[2]<b[5]&&q[5]>b[2]+.5&&over.indexOf(o.n)<0)over.push(o.n); return; }
-    if(oy){ if(q[3]<=b[0]&&b[0]-q[3]<g.left[0])g.left=[b[0]-q[3],o.n]; if(q[0]>=b[3]&&q[0]-b[3]<g.right[0])g.right=[q[0]-b[3],o.n]; }
-    if(ox){ if(q[4]<=b[1]&&b[1]-q[4]<g.top[0])g.top=[b[1]-q[4],o.n]; if(q[1]>=b[4]&&q[1]-b[4]<g.bottom[0])g.bottom=[q[1]-b[4],o.n]; } });
+    var my=(Math.max(q[1],b[1])+Math.min(q[4],b[4]))/2, mx=(Math.max(q[0],b[0])+Math.min(q[3],b[3]))/2;
+    if(oy){ if(q[3]<=b[0]&&b[0]-q[3]<g.left[0])g.left=[b[0]-q[3],o.n,my]; if(q[0]>=b[3]&&q[0]-b[3]<g.right[0])g.right=[q[0]-b[3],o.n,my]; }
+    if(ox){ if(q[4]<=b[1]&&b[1]-q[4]<g.top[0])g.top=[b[1]-q[4],o.n,mx]; if(q[1]>=b[4]&&q[1]-b[4]<g.bottom[0])g.bottom=[q[1]-b[4],o.n,mx]; } });
   return {over:over,g:g};
 }
 function fEsc(t){ return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function fInfo(){
-  if(!fSel||!fOn){ fbar.hidden=true; return; }
-  var p=fList().filter(function(q){return q.id===fSel;})[0]; if(!p){ fbar.hidden=true; return; }
-  var D=FDEF[p.t], r=fGaps(p), rm=roomAt(p.x,p.y), parts=[];
-  fbname.textContent=D.n+' · '+D.w+' × '+D.d+' cm'+(p.r?' · turned '+p.r+'°':'')+(rm?' · '+rm.n:'');
+  if(!fSel||!fOn){ fbar.hidden=true; fDims(null); return; }
+  var p=fGet(); if(!p){ fbar.hidden=true; return; }
+  var D=fDim(p), r=fGaps(p), rm=roomAt(p.x,p.y), parts=[];
+  fbname.textContent=D.n+(p.r?' · turned '+p.r+'°':'')+(rm?' · '+rm.n:'');
+  if(document.activeElement!==fbw)fbw.value=D.w; if(document.activeElement!==fbd)fbd.value=D.d;
+  fDims(p,r.g);
   if(r.over.length)parts.push('<span class="bad">Overlaps '+fEsc(r.over.slice(0,2).join(' and '))+'</span>');
   [['left','left'],['right','right'],['top','garden side'],['bottom','entrance side']].forEach(function(k){
     var v=r.g[k[0]]; if(v[0]>400)return; var cm=Math.round(v[0]), cls=cm<=15?'':cm<75?'warn':'ok';
@@ -1563,6 +1576,45 @@ function fSave(){ // this browser at once; the artifact's store a moment after t
       .then(function(){ fSaving=false; if(fDirtySave){ fDirtySave=false; go(); } });
   },700);
 }
+var fPast={}, fNext={};
+function fMark(){ var L=LAYOUT; (fPast[L]=fPast[L]||[]).push(JSON.stringify(fList())); if(fPast[L].length>80)fPast[L].shift(); fNext[L]=[]; fUndoUI(); }
+function fStep(back){ var L=LAYOUT, from=back?fPast:fNext, to=back?fNext:fPast; if(!(from[L]||[]).length)return;
+  (to[L]=to[L]||[]).push(JSON.stringify(fList())); furn[L]=JSON.parse(from[L].pop());
+  if(!fGet())fSel=null; fSync(); fSave(); fUndoUI(); toast(IS_MAC?(back?'⌘Z':'⇧⌘Z'):(back?'Ctrl+Z':'Shift+Ctrl+Z'),back?'Undone':'Redone'); }
+function fUndoUI(){ var L=LAYOUT; ['fundo','fbundo'].forEach(function(id){ var b=document.getElementById(id); if(b)b.disabled=!(fPast[L]||[]).length; });
+  var r=document.getElementById('fredo'); if(r)r.disabled=!(fNext[L]||[]).length; }
+// dimension lines from the chosen piece to the nearest thing on each side, drawn on the floor with their length
+var fDimG=new T.Group(), fDimEls=[], fDimMat=new T.LineBasicMaterial({color:0x2E5A74,depthTest:false,transparent:true});
+fDimG.renderOrder=10; scene.add(fDimG);
+function fDims(p,g){
+  fDimG.children.slice().forEach(function(o){ fDimG.remove(o); o.geometry.dispose(); });
+  fDimEls.forEach(function(q){ q.el.remove(); }); fDimEls=[];
+  if(!p||!fOn||!fObjs[p.id]||!fObjs[p.id].visible){ dirty=true; return; }
+  var b=fFoot(p), y=3*S;
+  [['left',-1,0],['right',1,0],['top',0,-1],['bottom',0,1]].forEach(function(k){
+    var v=g[k[0]], cm=v[0]; if(cm>400||cm<1)return;
+    var a, z, tk=6;
+    if(k[1]){ var x0=k[1]<0?b[0]:b[3]; a=[x0,v[2]]; z=[x0+k[1]*cm,v[2]]; }
+    else { var y0=k[2]<0?b[1]:b[4]; a=[v[2],y0]; z=[v[2],y0+k[2]*cm]; }
+    var pts=[P(a[0],a[1],3),P(z[0],z[1],3)];
+    [a,z].forEach(function(e){ pts.push(k[1]?P(e[0],e[1]-tk,3):P(e[0]-tk,e[1],3)); pts.push(k[1]?P(e[0],e[1]+tk,3):P(e[0]+tk,e[1],3)); });
+    var gm=new T.BufferGeometry().setFromPoints([pts[0],pts[1],pts[2],pts[3],pts[4],pts[5]]), ln=new T.LineSegments(gm,fDimMat); ln.renderOrder=10; fDimG.add(ln);
+    var el=document.createElement('div'); el.className='mlbl fdl'+(cm<75&&cm>15?' warn':''); el.textContent=Math.round(cm)+' cm'; stage.appendChild(el);
+    fDimEls.push({el:el,mid:P((a[0]+z[0])/2,(a[1]+z[1])/2,3)}); });
+  dirty=true;
+}
+function drawFDims(){ var W=stage.clientWidth,H=stage.clientHeight,v=new T.Vector3();
+  fDimEls.forEach(function(q){ v.copy(q.mid).project(camera); var vis=v.z<1&&Math.abs(v.x)<1.05&&Math.abs(v.y)<1.05; q.el.hidden=!vis;
+    if(vis){ q.el.style.left=((v.x+1)/2*W)+'px'; q.el.style.top=((1-v.y)/2*H)+'px'; } }); }
+// snapping: a face within 8 cm of a wall or another piece closes up against it (hold Alt to place freely)
+function fSnap(p){ var g=fGaps(p).g, n=8;
+  if(g.left[0]<n&&g.left[0]>0&&!(g.right[0]<g.left[0]))p.x-=g.left[0]; else if(g.right[0]<n&&g.right[0]>0)p.x+=g.right[0];
+  if(g.top[0]<n&&g.top[0]>0&&!(g.bottom[0]<g.top[0]))p.y-=g.top[0]; else if(g.bottom[0]<n&&g.bottom[0]>0)p.y+=g.bottom[0];
+  p.x=Math.round(p.x*10)/10; p.y=Math.round(p.y*10)/10; }
+function fResize(w,d){ var p=fGet(); if(!p)return; var D=FDEF[p.t];
+  w=Math.max(20,Math.min(500,Math.round(w))); d=Math.max(20,Math.min(500,Math.round(d))); if(!isFinite(w)||!isFinite(d))return;
+  var c=fDim(p); if(c.w===w&&c.d===d)return; fMark();
+  if(w===D.w)delete p.w; else p.w=w; if(d===D.d)delete p.d; else p.d=d; fSync(); fSave(); }
 function fAdd(t){
   var c=controls.target, p={id:t+'-'+Date.now().toString(36),t:t,x:Math.round(c.x/S/5)*5,y:Math.round(c.z/S/5)*5,r:0};
   if(mode==='eye'){ var dir=c.clone().sub(camera.position); dir.y=0; dir.normalize(); p.x=Math.round((camera.position.x/S+dir.x*150)/5)*5; p.y=Math.round((camera.position.z/S+dir.z*150)/5)*5; }
@@ -1573,11 +1625,11 @@ function fAdd(t){
     var rm=roomAt(p.x,p.y), fb=fFoot(p); if(!rm||fb[0]<rm.r[0]||fb[3]>rm.r[2]||fb[1]<rm.r[1]||fb[4]>rm.r[3])continue;
     if(!fGaps(p).over.length)found=true; } }
   if(!found){ p.x=x0; p.y=y0; }
-  fList().push(p); fSel=p.id; if(state.fu!=='all'){ setKey('fu','all',true); applyState(); } fSync(); fSave();
+  fMark(); fList().push(p); fSel=p.id; if(state.fu!=='all'){ setKey('fu','all',true); applyState(); } fSync(); fSave();
 }
 function fFind(o){ while(o&&!(o.userData&&o.userData.fid))o=o.parent; return o&&o.userData.fid; }
-function fRotate(deg){ var p=fList().filter(function(q){return q.id===fSel;})[0]; if(!p)return; p.r=((p.r+deg)%360+360)%360; fSync(); fSave(); }
-function fRemove(){ furn[LAYOUT]=fList().filter(function(q){return q.id!==fSel;}); fSel=null; fSync(); fSave(); }
+function fRotate(deg){ var p=fGet(); if(!p)return; fMark(); p.r=((p.r+deg)%360+360)%360; fSync(); fSave(); }
+function fRemove(){ if(!fGet())return; fMark(); furn[LAYOUT]=fList().filter(function(q){return q.id!==fSel;}); fSel=null; fSync(); fSave(); }
 function setFurnish(on){
   fOn=on; var b=document.getElementById('fmode'); b.setAttribute('aria-pressed',on?'true':'false'); b.textContent=on?'Stop furnishing':'Start furnishing';
   if(on){ clearCard(); if(measuring)setMeasuring(false); selectTab('furnish'); if(appEl.classList.contains('hidepanel'))window.togglePanel();
@@ -1597,12 +1649,17 @@ document.getElementById('fmode').addEventListener('click',function(){ setFurnish
 document.getElementById('fbrot').addEventListener('click',function(){ fRotate(90); });
 document.getElementById('fbdel').addEventListener('click',fRemove);
 document.getElementById('fbdone').addEventListener('click',function(){ fSel=null; fInfo(); });
+var fbw=document.getElementById('fbw'), fbd=document.getElementById('fbd');
+[fbw,fbd].forEach(function(i){ i.addEventListener('change',function(){ fResize(+fbw.value,+fbd.value); });
+  i.addEventListener('keydown',function(e){ if(e.key==='Enter'){ fResize(+fbw.value,+fbd.value); i.blur(); } e.stopPropagation(); }); });
+['fundo','fbundo'].forEach(function(id){ document.getElementById(id).addEventListener('click',function(){ fStep(true); }); });
+document.getElementById('fredo').addEventListener('click',function(){ fStep(false); });
 var fclearArmed=false;
 document.getElementById('fclear').addEventListener('click',function(){ var b=this;
   if(!fclearArmed){ fclearArmed=true; b.textContent='Click again to clear'; setTimeout(function(){ fclearArmed=false; b.textContent='Clear all'; },3000); return; }
-  fclearArmed=false; b.textContent='Clear all'; furn[LAYOUT]=[]; fSel=null; fSync(); fSave(); });
+  fclearArmed=false; b.textContent='Clear all'; if(fList().length)fMark(); furn[LAYOUT]=[]; fSel=null; fSync(); fSave(); });
 document.getElementById('fcopy').addEventListener('click',function(){
-  var lines=['AZAD furniture · '+SCENE.name+' · plan cm (x to the right, y down the plan), centre of each piece'].concat(fList().map(function(p){ var D=FDEF[p.t], rm=roomAt(p.x,p.y);
+  var lines=['AZAD furniture · '+SCENE.name+' · plan cm (x to the right, y down the plan), centre of each piece'].concat(fList().map(function(p){ var D=fDim(p), rm=roomAt(p.x,p.y);
     return D.n+' '+D.w+'×'+D.d+(D.h>2?'×'+D.h:'')+' cm at ('+p.x+', '+p.y+'), turned '+p.r+'°'+(rm?', '+rm.n:''); }));
   var txt=lines.join('\n'), b=this;
   function done(ok){ b.textContent=ok?'Copied':'Copy the text below'; setTimeout(function(){ b.textContent='Copy list'; },2500);
@@ -1618,17 +1675,28 @@ renderer.domElement.addEventListener('pointerdown',function(e){
   fNdc(e); var h=fRay.intersectObjects(fsolids.filter(function(o){return o.parent.visible;}),false)[0], id=h&&fFind(h.object);
   if(!id){ fSel=null; fInfo(); return; }
   e.stopImmediatePropagation(); e.preventDefault(); fSel=id;
-  var p=fList().filter(function(q){return q.id===id;})[0], f=fFloorAt(e); fDrag={p:p,dx:f?p.x-f.x/S:0,dy:f?p.y-f.z/S:0};
+  var p=fList().filter(function(q){return q.id===id;})[0], f=fFloorAt(e); fDrag={p:p,dx:f?p.x-f.x/S:0,dy:f?p.y-f.z/S:0,was:JSON.stringify(fList()),x0:p.x,y0:p.y};
   controls.enabled=false; try{ renderer.domElement.setPointerCapture(e.pointerId); }catch(er){} fInfo();
 },{capture:true});
 renderer.domElement.addEventListener('pointermove',function(e){
   if(!fOn)return;
   if(!fDrag){ fNdc(e); renderer.domElement.style.cursor=fRay.intersectObjects(fsolids,false).length?'grab':''; return; }
-  var f=fFloorAt(e); if(!f)return; fDrag.p.x=Math.round((f.x/S+fDrag.dx)/5)*5; fDrag.p.y=Math.round((f.z/S+fDrag.dy)/5)*5; fPlace(fDrag.p); fInfo(); dirty=true;
+  var f=fFloorAt(e); if(!f)return; fDrag.p.x=Math.round((f.x/S+fDrag.dx)/5)*5; fDrag.p.y=Math.round((f.z/S+fDrag.dy)/5)*5; if(!e.altKey)fSnap(fDrag.p); fPlace(fDrag.p); fInfo(); dirty=true;
 });
-renderer.domElement.addEventListener('pointerup',function(){ if(!fDrag)return; fDrag=null; controls.enabled=true; fSync(); fSave(); });
+renderer.domElement.addEventListener('pointerup',function(){ if(!fDrag)return; var d=fDrag; fDrag=null; controls.enabled=true;
+  if(d.p.x!==d.x0||d.p.y!==d.y0){ var L=LAYOUT; (fPast[L]=fPast[L]||[]).push(d.was); fNext[L]=[]; fUndoUI(); }
+  fSync(); fSave(); });
 window.addEventListener('keydown',function(e){
-  if(!fOn||!fSel||/input|textarea|select/i.test(e.target.tagName))return;
+  if(!fOn||/input|textarea|select/i.test(e.target.tagName))return;
+  var k=(e.key||'').toLowerCase();
+  if((e.metaKey||e.ctrlKey)&&(k==='z'||k==='y')){ fStep(!(k==='y'||e.shiftKey)); e.preventDefault(); e.stopImmediatePropagation(); return; }
+  if(!fSel)return;
+  var nv={arrowleft:[-1,0],arrowright:[1,0],arrowup:[0,-1],arrowdown:[0,1]}[k];
+  if(nv&&!e.altKey&&!e.metaKey&&!e.ctrlKey){ var p=fGet(); if(!p)return; if(!e.repeat)fMark(); var st=e.shiftKey?1:5;
+    // the arrows follow the screen: up moves the piece away from you
+    var fw=controls.target.clone().sub(camera.position); fw.y=0; fw.normalize(); var rt=new T.Vector3(-fw.z,0,fw.x);
+    var mv=rt.multiplyScalar(nv[0]).add(fw.multiplyScalar(-nv[1])); if(Math.abs(mv.x)>Math.abs(mv.z)){ p.x+=Math.sign(mv.x)*st; } else { p.y+=Math.sign(mv.z)*st; }
+    fPlace(p); fInfo(); fSave(); dirty=true; e.preventDefault(); e.stopImmediatePropagation(); return; }
   if(e.key==='r'||e.key==='R'){ fRotate(e.shiftKey?15:90); e.preventDefault(); e.stopImmediatePropagation(); }
   else if(e.key==='Delete'||e.key==='Backspace'){ fRemove(); e.preventDefault(); e.stopImmediatePropagation(); }
 },{capture:true});
@@ -1748,7 +1816,7 @@ function loop(now){
   var moving=!!anim||KEYS.some(function(k){return keys[k];});
   walk(dt); tickSun(dt); controls.update();
   if(moving)adaptQuality(raw,now);
-  if(moving||dirty){ draw(false); drawLabels(); drawDims(); hud(); drawMinimap(); placeCard(); drawMeasures(); dirty=false; needFull=true; idleT=now; }
+  if(moving||dirty){ draw(false); drawLabels(); drawDims(); hud(); drawMinimap(); placeCard(); drawMeasures(); drawFDims(); dirty=false; needFull=true; idleT=now; }
   else if(needFull&&now-idleT>140){ draw(true); needFull=false; }        // idle frames skip rendering entirely
 }
 
