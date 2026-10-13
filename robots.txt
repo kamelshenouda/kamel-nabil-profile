@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /profile.html
+Disallow: /azad/
+
+Sitemap: https://kamelnabil.com/sitemap.xml
